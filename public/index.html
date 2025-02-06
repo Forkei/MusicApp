@@ -1,98 +1,90 @@
 <!DOCTYPE html>
-<html>
+<!-- public/index.html -->
+<html lang="en">
 <head>
-    <title>Music Player</title>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css" integrity="sha512-SzlrxWUlpfuzQ+pcUCosxcglQRNAq/DZjVsC0lE40xsADsfeQoEypE+enwcOiGjk/bSuGGKHEyjSoQ1zVisanQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <title>Music Player</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="top-bar">
-        <button id="hamburger-menu-desktop"><i class="fas fa-bars"></i></button>
-        <div class="mini-player">
-            <span class="song-info"></span>
-            <div class="controls">
-                <button id="audioToggleButton"><i class="fas fa-volume-up"></i></button>
-                <button id="prevButton"><i class="fas fa-step-backward"></i></button>
-                <button id="playPauseButton"><i class="fas fa-play"></i></button>
-                <button id="nextButton"><i class="fas fa-step-forward"></i></button>
-            </div>
-            <div class="progress-bar">
-                <div class="progress"></div>
-            </div>
+        <div class="hamburger-menu">
+            <i class="fas fa-bars"></i>
         </div>
-    </div>
+        <div class="song-info">
+            <span id="current-song-title">No song playing</span>
+        </div>
+          <div id="audio-controls">
+            <input type="checkbox" id="audio-enabled" checked />
+            <label for="audio-enabled">Audio</label>
+          </div>
 
-    <div class="mobile-top-bar">
-        <button id="hamburger-menu"><i class="fas fa-bars"></i></button>
-        <span class="mobile-song-info"></span>
-        <div class="mobile-controls">
-            <button id="mobile-prev"><i class="fas fa-step-backward"></i></button>
-            <button id="mobile-play-pause"><i class="fas fa-play"></i></button>
-            <button id="mobile-next"><i class="fas fa-step-forward"></i></button>
-            <button id="mobile-audio-toggle"><i class="fas fa-volume-up"></i></button>
-        </div>
     </div>
 
     <div class="sidebar">
-        <ul>
-            <li><a href="#" data-page="databasePage"><i class="fas fa-database"></i> Database</a></li>
-            <li><a href="#" data-page="addPage"><i class="fas fa-plus"></i> Add</a></li>
-            <li><a href="#" data-page="playPage"><i class="fas fa-play"></i> Play</a></li>
-        </ul>
+        <div class="sidebar-header">
+            <h2>Menu</h2>
+            <button class="close-sidebar">×</button>
+        </div>
+        <a href="#" id="nav-search">Search</a>
+        <a href="#" id="nav-queue">Queue</a>
+        <a href="#" id="nav-library">Library</a>
     </div>
 
     <div class="main-content">
-        <div id="databasePage" class="page">
-            <h2>Database</h2>
-            <input type="text" id="dbSearchInput" placeholder="Search database...">
-            <button id="dbSearchButton">Search</button>
-            <ul class="song-list" id="songList"></ul>
+        <div id="search-page" class="page">
+            <h2>Search</h2>
+            <input type="text" id="search-input" placeholder="Search for songs on YouTube">
+            <button id="search-button">Search</button>
+            <div id="search-results"></div>
         </div>
 
-        <div id="addPage" class="page hidden">
-            <h2>Add Song</h2>
-            <div class="search-bar">
-                <input type="text" id="searchInput" placeholder="Search for songs on YouTube...">
-                <button id="searchButton">Search</button>
-            </div>
-            <div id="search-loading-indicator" class="hidden">Loading...</div>
-            <ul class="search-results" id="searchResults"></ul>
+        <div id="queue-page" class="page hidden">
+            <h2>Queue</h2>
+            <ul id="queue-list"></ul>
+            <button id="clear-queue-button">Clear Queue</button>
         </div>
 
-        <div id="playPage" class="page hidden">
-            <img src="placeholder.jpg" alt="Album Art" class="album-art" id="album-art">
-            <h2 id="currentSongTitle">Song Title</h2>
-            <p id="currentSongArtist">Artist Name</p>
-            <div class="player-controls">
-                <button id="prevButtonLarge"><i class="fas fa-step-backward"></i></button>
-                <button id="playPauseButtonLarge"><i class="fas fa-play"></i></button>
-                <button id="nextButtonLarge"><i class="fas fa-step-forward"></i></button>
-                <button id="fullscreen-button"><i class="fa-solid fa-expand"></i></button>
-                <button id="loop-button"><i class="fas fa-sync-alt"></i></button>
-            </div>
-            <div class="seek-bar">
-                <div class="progress"></div>
-            </div>
-            <div class="volume-control">
-                <label for="volumeSlider">Volume:</label>
-                <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="0.5">
-            </div>
-            <div class="queue">
-                <h3>Queue</h3>
-                <ul class="queue-list" id="queueList"></ul>
-            </div>
+        <div id="library-page" class="page hidden">
+            <h2>Library</h2>
+            <ul id="library-list"></ul>
         </div>
+
+        <div id="play-page" class="page hidden">
+          <div class="player-container">
+            <img id="album-art" src="" alt="Album Art">
+              <h2 id="playing-song-title"></h2>
+
+              <div class="controls">
+                <button id="previous-button"><i class="fas fa-step-backward"></i></button>
+                <button id="play-pause-button"><i class="fas fa-play"></i></button>
+                <button id="next-button"><i class="fas fa-step-forward"></i></button>
+                <button id="loop-button"><i class="fas fa-redo"></i></button> <!-- Loop Button -->
+              </div>
+              <input type="range" id="seek-bar" min="0" value="0">
+              <div class="time-display">
+                  <span id="current-time">0:00</span> / <span id="duration">0:00</span>
+                </div>
+
+              <div class="volume-control">
+                <i class="fas fa-volume-down"></i>
+                <input type="range" id="volume-bar" min="0" max="1" step="0.01" value="1">
+                <i class="fas fa-volume-up"></i>
+              </div>
+
+              <button id="fullscreen-button"><i class="fas fa-expand"></i></button>
+          </div>
+        </div>
+
+        <audio id="audio-player"></audio>
         <div id="error-message" class="hidden"></div>
     </div>
 
     <script src="/socket.io/socket.io.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/2.3.6/purify.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
-    <script type="module" src="js/app.js"></script>
-    <script type="module" src="js/ui.js"></script>
-    <script type="module" src="js/api.js"></script>
-    <script type="module" src="js/player.js"></script>
-    <audio id="audioPlayer"></audio>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.8/dist/purify.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
