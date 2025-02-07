@@ -19,6 +19,9 @@ const io = socketIo(server);
 
 const PORT = process.env.PORT || 3000;
 const AUDIO_DIR = path.join(__dirname, 'Audio');
+const IMAGES_DIR = path.join(__dirname, 'public/images');
+
+fsp.mkdir(IMAGES_DIR, { recursive: true }).catch(err => console.error('Error creating images directory:', err));
 
 // Function to check for yt-dlp installation
 async function checkYtDlpInstallation() {
@@ -95,6 +98,7 @@ async function saveQueueToFile() {
     }
 }
 
+
 // Start playing a song (server-side)
 function startPlaying(song) {
     serverPlaybackState.currentSong = song;
@@ -102,7 +106,7 @@ function startPlaying(song) {
     serverPlaybackState.startTime = Date.now();
     serverPlaybackState.pausedTime = null;
     serverPlaybackState.seekTime = null;
-    let albumArtPath = song.albumArtPath ? `public/images/${path.basename(song.albumArtPath)}` : 'public/images/placeholder.jpg';
+    let albumArtPath = song.albumArtPath ? `${IMAGES_DIR}/public/images/${path.basename(song.albumArtPath)}` : `${IMAGES_DIR}/public/images/placeholder.jpg`;
     io.emit('currentlyPlaying', song, {albumArtPath: albumArtPath}); // Inform all clients
     console.log('Server starts playing:', song.title, '| Album Art:', albumArtPath);
 }
@@ -482,7 +486,7 @@ app.post('/api/download', async (req, res) => {
             }
         }
 
-        const albumArtDir = path.join('public', 'images');
+        const albumArtDir = IMAGES_DIR;
         try {
              await fsp.mkdir(albumArtDir, { recursive: true });
             console.log("Created album art directory:", albumArtDir);
@@ -496,7 +500,7 @@ app.post('/api/download', async (req, res) => {
         const downloadOptions = [
             '--extract-audio',
             '--audio-format', 'mp3',
-            '--output', `${AUDIO_DIR}/%(title)s.%(ext)s`,
+            '--output', `"${AUDIO_DIR}/%(title)s.%(ext)s"`,
             '--no-playlist',
             '-f', 'bestaudio/best', // Add this line to specify the format
             '--write-thumbnail',
