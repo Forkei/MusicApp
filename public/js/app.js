@@ -186,9 +186,16 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Update album art
+        const albumArtPath = song.albumArtPath ? 'images/{song.albumArtPath}' : 'images/placeholder.jpg'
+        
+
+
         if (albumArt) {
-            albumArt.src = song.albumArtPath || defaultAlbumArt;
+            albumArt.src = albumArtPath || defaultAlbumArt;
         }
+
+        console.log(albumArtPath)
+        console.log(albumArt)
 
         // Play the audio when it's ready
         audioPlayer.onloadeddata = () => {
@@ -208,7 +215,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 title: DOMPurify.sanitize(song.title),
                                 artist: DOMPurify.sanitize(song.artist || 'Unknown Artist'),
                                 album: DOMPurify.sanitize(song.album || 'Unknown Album'),
-                                artwork: [{ src: song.albumArtPath || 'placeholder.jpg' }]
+                                artwork: [{ src: albumArtPath || 'placeholder.jpg' }]
                             });
                         }
                     })

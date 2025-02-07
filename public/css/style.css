@@ -473,6 +473,7 @@ body {
         height: 80vw;
         max-width: 500px;
         max-height: 500px;
+        text-align: center;
     }
 
     .player-controls {
