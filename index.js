@@ -88,7 +88,7 @@ async function loadQueueFromFile() {
 async function saveQueueToFile() {
     try {
         const data = queue.filter(filePath => filePath.startsWith(AUDIO_DIR)).map(filePath => path.relative(AUDIO_DIR, filePath));
-        await fsp.writeFile('queue.json', JSON.stringify(data), 'utf8');
+        await fsp.writeFile('queue.json', JSON.stringify(data, null, 2), 'utf8');
         console.log('Queue saved to file');
     } catch (err) {
         console.error('Error saving queue to file:', err);
@@ -102,8 +102,9 @@ function startPlaying(song) {
     serverPlaybackState.startTime = Date.now();
     serverPlaybackState.pausedTime = null;
     serverPlaybackState.seekTime = null;
-    io.emit('currentlyPlaying', song); // Inform all clients
-    console.log('Server starts playing:', song.title);
+    let albumArtPath = song.albumArtPath ? `public/images/${path.basename(song.albumArtPath)}` : 'public/images/placeholder.jpg';
+    io.emit('currentlyPlaying', song, {albumArtPath: albumArtPath}); // Inform all clients
+    console.log('Server starts playing:', song.title, '| Album Art:', albumArtPath);
 }
 
 // Pause playing (server-side)
@@ -208,7 +209,7 @@ io.on('connection', (socket) => {
             const song = songs.find(s => s.filePath === songFilePath);
             if (song) {
                 queue.push(song.filePath);
-                io.emit('queueUpdate', queue.filter(filePath => filePath !== serverPlaybackState.currentSong?.filePath));
+                io.emit('queueUpdate', queue.map(filePath => path.relative(AUDIO_DIR, filePath)));
                 await saveQueueToFile();
             } else {
                 socket.emit('error', 'Song not found');
@@ -224,7 +225,7 @@ io.on('connection', (socket) => {
         try {
             if (songIndex >= 0 && songIndex < queue.length) {
                 queue.splice(songIndex, 1);
-                io.emit('queueUpdate', queue.filter(filePath => filePath !== serverPlaybackState.currentSong?.filePath));
+                io.emit('queueUpdate', queue.map(filePath => path.relative(AUDIO_DIR, filePath)));
                 await saveQueueToFile();
             } else {
                 socket.emit('error', 'Invalid song index');
@@ -253,8 +254,8 @@ io.on('connection', (socket) => {
         if (Array.isArray(newQueueOrder)) {
             const newQueue = [];
             for (const filePath of newQueueOrder) {
-                if (songs.some(s => s.filePath === filePath)) {
-                    newQueue.push(filePath);
+                if (songs.some(s => s.filePath === path.join(AUDIO_DIR, filePath))) {
+                    newQueue.push(path.join(AUDIO_DIR, filePath));
                 } else {
                     console.error('Error reordering queue: Song not found:', filePath);
                     socket.emit('error', `Song not found: ${filePath}`);
@@ -262,7 +263,7 @@ io.on('connection', (socket) => {
                 }
             }
             queue = newQueue;
-            io.emit('queueUpdate', queue.filter(filePath => filePath !== serverPlaybackState.currentSong?.filePath)); //
+            io.emit('queueUpdate', queue.map(filePath => path.relative(AUDIO_DIR, filePath)));
             await saveQueueToFile();
             console.log('Queue reordered');
         } else {
@@ -752,7 +753,7 @@ async function scanAudioDirectory() {
                 const { duration, tags } = format;
 
                 const baseName = path.basename(dirent.name, '.mp3');
-                const albumArtPath = path.join(AUDIO_DIR, 'albumart', `${baseName}.jpg`);
+                const albumArtPath = path.join('public', 'images', `${baseName}.jpg`);
                 // Check if the file exists before accessing it
                 const albumArtExists = await fsp.access(albumArtPath).then(() => true).catch(() => false);
 
@@ -764,7 +765,7 @@ async function scanAudioDirectory() {
                     youtubeId: null, // No longer fetching from DB
                     duration: duration,
                     uploader: null, // No longer fetching from DB
-                    albumArtPath: albumArtExists ? albumArtPath : null,
+                    albumArtPath: albumArtExists ? `public/images/${path.basename(albumArtPath)}` : '/images/placeholder.jpg',
                 };
 
                 songs.push(newSong);

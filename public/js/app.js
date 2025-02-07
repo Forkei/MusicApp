@@ -186,12 +186,15 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Update album art
-        const albumArtPath = song.albumArtPath ? 'images/{song.albumArtPath}' : 'images/placeholder.jpg'
+        const albumArtPath = song.albumArtPath ? `/images/${encodeURIComponent(song.albumArtPath)}` : '/images/placeholder.jpg';
         
 
 
         if (albumArt) {
-            albumArt.src = albumArtPath || defaultAlbumArt;
+            albumArt.src = albumArtPath;
+            albumArt.onerror = () => {
+                albumArt.src = '/images/placeholder.jpg'; // in case fetching album art fails
+            };
         }
 
         console.log(albumArtPath)
@@ -807,6 +810,18 @@ document.addEventListener('DOMContentLoaded', () => {
             if (currentSongArtist) currentSongArtist.innerHTML = DOMPurify.sanitize(song.artist || 'Unknown Artist');
             // Update the mini-player
             updateMiniPlayer(song);
+
+            const albumArtPath = song.albumArtPath || '/images/placeholder.jpg';
+            console.log("Setting album art to:", albumArtPath);
+    
+            if (albumArt) {
+                albumArt.src = albumArtPath;
+                albumArt.onload = () => console.log("Album art loaded:", albumArtPath);
+                albumArt.onerror = () => {
+                    console.error("Error loading album art, falling back to placeholder:", albumArtPath);
+                    albumArt.src = '/images/placeholder.jpg';
+                };
+            }
 
             // Only play the song if the client has audio enabled
             if (playbackState.clientsPlayingAudio.includes(socket.id)) {
