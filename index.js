@@ -71,7 +71,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 async function loadQueueFromFile() {
     try {
         const data = await fsp.readFile('queue.json', 'utf8');
-        queue = JSON.parse(data);
+        let loadedQueue = JSON.parse(data);
+        queue = loadedQueue.filter(filePath => filePath.startsWith(AUDIO_DIR));
         console.log('Queue loaded from file:', queue.length, 'songs');
     } catch (err) {
         if (err.code === 'ENOENT') {
@@ -85,7 +86,7 @@ async function loadQueueFromFile() {
 
 async function saveQueueToFile() {
     try {
-        const data = JSON.stringify(queue.filter(filePath => filePath !== serverPlaybackState.currentSong?.filePath));
+        const data = JSON.stringify(queue.filter(filePath => filePath.startsWith(AUDIO_DIR)));
         await fsp.writeFile('queue.json', data, 'utf8');
         console.log('Queue saved to file');
     } catch (err) {
@@ -615,7 +616,7 @@ app.get('/api/player/current', (req, res) => {
 
 // API endpoint to get the current queue
 app.get('/api/queue', (req, res) => {
-    res.json(queue.filter(filePath => filePath !== serverPlaybackState.currentSong?.filePath));
+    res.json(queue.filter(filePath => filePath.startsWith(AUDIO_DIR)));
 });
 
 // API endpoint to delete a song
