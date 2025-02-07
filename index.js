@@ -71,8 +71,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 async function loadQueueFromFile() {
     try {
         const data = await fsp.readFile('queue.json', 'utf8');
-        let loadedQueue = JSON.parse(data);
-        queue = loadedQueue.filter(filePath => filePath.startsWith(AUDIO_DIR));
+        const rQueue = JSON.parse(data) || [];
+
+        queue = rQueue.map(rPath => path.join(AUDIO_DIR, rPath));
         console.log('Queue loaded from file:', queue.length, 'songs');
     } catch (err) {
         if (err.code === 'ENOENT') {
@@ -86,8 +87,8 @@ async function loadQueueFromFile() {
 
 async function saveQueueToFile() {
     try {
-        const data = JSON.stringify(queue.filter(filePath => filePath.startsWith(AUDIO_DIR)));
-        await fsp.writeFile('queue.json', data, 'utf8');
+        const data = queue.filter(filePath => filePath.startsWith(AUDIO_DIR)).map(filePath => path.relative(AUDIO_DIR, filePath));
+        await fsp.writeFile('queue.json', JSON.stringify(data), 'utf8');
         console.log('Queue saved to file');
     } catch (err) {
         console.error('Error saving queue to file:', err);
