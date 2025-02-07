@@ -9,14 +9,16 @@ const fs = require('fs'); // Import the original fs module
 const fsp = require('fs').promises; // Use fsp for fs.promises for easier async/await
 const ffmpeg = require('fluent-ffmpeg');
 const path = require('path');
+const os = require('os');
 const sanitize = require('sanitize-filename');
+
 
 const app = express();
 const server = http.createServer(app);
 const io = socketIo(server);
 
 const PORT = process.env.PORT || 3000;
-const AUDIO_DIR = 'C:/Users/forke/Documents/MusicApp2/Audio'; // **REPLACE WITH YOUR ACTUAL AUDIO DIRECTORY PATH**
+const AUDIO_DIR = path.join(__dirname, 'Audio');
 
 // Function to check for yt-dlp installation
 async function checkYtDlpInstallation() {
