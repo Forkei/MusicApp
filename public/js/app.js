@@ -42,6 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const currentSongTitle = document.getElementById('currentSongTitle');
     const currentSongArtist = document.getElementById('currentSongArtist');
     const albumArt = document.getElementById('album-art');
+    const defaultAlbumArt = 'images/placeholder.jpg';
     const loopButton = document.getElementById('loop-button');
     const fullscreenButton = document.getElementById('fullscreen-button');
 
@@ -186,7 +187,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Update album art
         if (albumArt) {
-            albumArt.src = song.albumArtPath || 'placeholder.jpg';
+            albumArt.src = song.albumArtPath || defaultAlbumArt;
         }
 
         // Play the audio when it's ready

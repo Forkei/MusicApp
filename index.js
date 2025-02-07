@@ -479,7 +479,7 @@ app.post('/api/download', async (req, res) => {
             }
         }
 
-        const albumArtDir = path.join(AUDIO_DIR, 'albumart');
+        const albumArtDir = path.join('public', 'images');
         try {
              await fsp.mkdir(albumArtDir, { recursive: true });
             console.log("Created album art directory:", albumArtDir);
