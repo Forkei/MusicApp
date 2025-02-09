@@ -193,6 +193,14 @@ io.on('connection', (socket) => {
     console.log('A user connected:', socket.id);
 
     clients[socket.id] = { socket };
+    if(!playbackState.clientsPlayingAudio.includes(socket.id)) {
+        playbackState.clientsPlayingAudio.push(socket.id);
+        console.log("Client audio enabled by default: ", socket.id);
+        if(serverPlaybackState.isPlaying) {
+            const serverTime = getCurrentPlaybackPosition;
+            socket.emit("seek", serverTime / 1000);
+        }
+    }
 
     socket.emit('queueUpdate', queue.filter(filePath => filePath !== serverPlaybackState.currentSong?.filePath));
     socket.emit('playbackStateUpdate', playbackState);
