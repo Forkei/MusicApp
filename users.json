@@ -1,0 +1,18 @@
+[
+  {
+    "username": "forkei",
+    "password": "poopypants",
+    "role": "admin"
+  },
+  {
+    "username": "forkei2",
+    "password": "fart",
+    "role": "user"
+  },
+  {
+    "username": "forkei3",
+    "password": "creapy",
+    "role": "admin",
+    "permissions": {}
+  }
+]

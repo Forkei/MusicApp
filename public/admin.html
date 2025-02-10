@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Admin Panel - Music Player</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/admin.css">
+  </head>
+  <body>
+    <div class="admin-container">
+      <div class="admin-tabs">
+        <button class="tab-button active" data-tab="users">Users</button>
+        <button class="tab-button" data-tab="roles">Roles</button>
+      </div>
+      <div class="tab-content" id="usersTab">
+        <div class="users-list">
+          <h3>Users</h3>
+          <div id="usersList"></div>
+        </div>
+        <div class="user-details">
+          <h3>User Details</h3>
+          <div id="userDetails">
+            <p>Select a user to view details</p>
+          </div>
+        </div>
+      </div>
+      <div class="tab-content hidden" id="rolesTab">
+        <div class="roles-list">
+          <h3>Roles</h3>
+          <button id="addRoleBtn">Add New Role</button>
+          <div id="rolesList"></div>
+        </div>
+        <div class="role-details">
+          <h3>Role Permissions</h3>
+          <div id="roleDetails">
+            <p>Select a role to view permissions</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="js/admin.js"></script>
+  </body>
+</html>

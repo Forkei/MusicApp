@@ -1,0 +1,24 @@
+{
+  "permissions": {
+    "forkei": {
+      "AUDIO_TOGGLE": "enabled",
+      "PLAYBACK_CONTROL": "enabled",
+      "SKIP_CONTROL": "enabled",
+      "REPEAT_CONTROL": "enabled",
+      "QUEUE_MANAGEMENT": "enabled",
+      "SEARCH_DOWNLOAD": "enabled",
+      "DELETE_SONGS": "enabled",
+      "ADMIN_ACCESS": "enabled"
+    },
+	"forkei3": {
+	  "AUDIO_TOGGLE": "enabled",
+      "PLAYBACK_CONTROL": "enabled",
+      "SKIP_CONTROL": "enabled",
+      "REPEAT_CONTROL": "enabled",
+      "QUEUE_MANAGEMENT": "enabled",
+      "SEARCH_DOWNLOAD": "enabled",
+      "DELETE_SONGS": "enabled",
+      "ADMIN_ACCESS": "enabled"
+	}
+  }
+}

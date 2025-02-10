@@ -1,587 +1,463 @@
-/* --- START OF FILE style.css --- */
-
-/* Reset some default styles */
+/* style.css */
+/* Reset and global styles */
 body, ul {
-    margin: 0;
-    padding: 0;
-    list-style: none;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.hidden {
+  display: none;
 }
 
 /* Overall layout */
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-    background-color: #121212;
-    color: #eee;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #121212;
+  color: #eee;
+  margin: 0;
+  padding-top: 60px; /* space for top bar */
 }
 
 /* Top bar */
 .top-bar {
-    background-color: #080808;
-    padding: 10px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    z-index: 100;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  background-color: #080808;
+  padding: 10px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 100;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.5);
 }
-
-/* Hamburger menu icon */
-#hamburger-menu {
-    cursor: pointer;
-    display: none; /* Hidden by default on larger screens */
-    margin-right: 15px;
-}
-
-#hamburger-menu span {
-    display: block;
-    width: 25px;
-    height: 3px;
-    background-color: #eee;
-    margin: 5px 0;
-    transition: 0.4s;
-}
-
-/* Main content area */
-.main-content {
-    padding: 20px;
-    margin-top: 60px;
-    flex-grow: 1;
-    overflow-y: auto;
-}
-
-/* Navigation */
 .nav {
-    display: flex;
+  display: flex;
 }
-
 .nav li {
-    margin-right: 20px;
+  margin-right: 20px;
 }
-
 .nav a {
-    text-decoration: none;
-    color: #eee;
-    font-weight: bold;
-    padding: 8px 15px;
-    border-radius: 5px;
-    transition: background-color 0.3s ease;
-    cursor: pointer;
+  text-decoration: none;
+  color: #eee;
+  font-weight: bold;
+  padding: 8px 15px;
+  border-radius: 5px;
+  transition: background 0.3s;
+  cursor: pointer;
 }
-
 .nav a:hover {
-    background-color: #444;
+  background-color: #444;
 }
-
-/* Navigation - Active Link Style */
 .nav a.active {
-    background-color: #1DB954; /* Or your desired active link color */
-    color: white;
+  background-color: #1DB954;
+  color: white;
+}
+.auth-links a {
+  color: #eee;
+  text-decoration: none;
+  padding: 5px 10px;
+  border: 1px solid #eee;
+  border-radius: 3px;
+  transition: background 0.3s;
+}
+.auth-links a:hover {
+  background-color: #444;
 }
 
-/* Mini Player */
+/* Mini-player */
 .mini-player {
-    display: flex;
-    align-items: center;
+  display: flex;
+  align-items: center;
 }
-
 .mini-player .song-info {
-    margin-right: 15px;
-    font-size: 0.9em;
-    color: #ccc;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 150px; /* Adjust the max-width to your preference */
+  margin-right: 15px;
+  font-size: 0.9em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 150px;
 }
-
 .mini-player .controls button {
-    background: none;
-    border: none;
-    color: #eee;
-    font-size: 16px;
-    cursor: pointer;
-    margin-left: 10px;
-    padding: 5px;
-    border-radius: 3px;
-    transition: background-color 0.3s ease;
+  background: none;
+  border: none;
+  color: #eee;
+  font-size: 16px;
+  padding: 5px;
+  cursor: pointer;
+  border-radius: 3px;
+  margin-left: 10px;
+  transition: background 0.3s;
 }
-
 .mini-player .controls button:hover {
-    background-color: #444;
+  background-color: #444;
 }
-
 #audioToggleButton {
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s;
 }
-
-/* Audio toggle ON state */
-#audioToggleButton.audio-on {
-    background-color: green;
-}
-
-/* Audio toggle OFF state */
-#audioToggleButton.audio-off {
-    background-color: red;
-}
-
 #audioToggleButton:hover {
-    opacity: 0.8;
+  opacity: 0.8;
 }
-
-/* Progress Bar */
 .progress-bar {
-    width: 200px;
-    height: 8px;
-    background-color: #444;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-left: 15px;
+  width: 200px;
+  height: 8px;
+  background-color: #444;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-left: 15px;
 }
-
 .progress {
-    height: 100%;
-    width: 0%;
-    background-color: #1DB954;
-    border-radius: 5px;
+  height: 100%;
+  width: 0%;
+  background-color: #1DB954;
+  border-radius: 5px;
 }
 
-/* Database Page */
+/* Database page */
 #databasePage h2 {
-    margin-bottom: 20px;
+  margin-bottom: 20px;
 }
-
-/* Database Search Input and Button */
 #dbSearchInput {
-    padding: 10px;
-    border: none;
-    border-radius: 5px;
-    margin-right: 5px;
-    background-color: #333;
-    color: #eee;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  margin-right: 5px;
+  background-color: #333;
+  color: #eee;
 }
-
 #dbSearchButton {
-    padding: 10px 15px;
-    border: none;
-    border-radius: 5px;
-    background-color: #1DB954;
-    color: white;
-    cursor: pointer;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  background-color: #1DB954;
+  color: white;
+  cursor: pointer;
 }
-
 .song-list {
-    margin-bottom: 20px;
+  margin-bottom: 20px;
 }
-
 .song-item {
-    display: flex;
-    align-items: center;
-    padding: 10px;
-    border-bottom: 1px solid #444;
-    transition: background-color 0.3s ease;
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border-bottom: 1px solid #444;
+  transition: background 0.3s;
 }
-
-.song-item:last-child {
-    border-bottom: none;
-}
-
 .song-item:hover {
-    background-color: #282828;
+  background-color: #282828;
 }
-
 .song-item .title {
-    flex-grow: 1;
-    margin-right: 10px;
+  flex-grow: 1;
+  margin-right: 10px;
 }
-
 .song-item .artist {
-    color: #aaa;
-    font-size: 0.9em;
-    margin-right: 10px;
-    flex-shrink: 0;
+  color: #aaa;
+  font-size: 0.9em;
+  margin-right: 10px;
 }
-
 .song-item button {
-    background-color: #1DB954;
-    color: #fff;
-    border: none;
-    padding: 5px 10px;
-    border-radius: 5px;
-    cursor: pointer;
-    white-space: nowrap;
-    transition: background-color 0.3s ease;
-    margin-left: auto;
+  background-color: #1DB954;
+  color: #fff;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-left: auto;
+  transition: background 0.3s;
 }
-
 .song-item button:hover {
-    background-color: #1ED760;
+  background-color: #1ED760;
 }
-
 .song-item button[disabled] {
-    background-color: #444;
-    cursor: default;
+  background-color: #444;
+  cursor: default;
 }
 
-/* Add Page */
+/* Add page */
 #addPage h2 {
-    margin-bottom: 20px;
+  margin-bottom: 20px;
 }
-
 .search-bar {
-    display: flex;
-    margin-bottom: 20px;
+  display: flex;
+  margin-bottom: 20px;
 }
-
 .search-bar input {
-    flex-grow: 1;
-    padding: 10px;
-    font-size: 16px;
-    border-radius: 5px;
-    border: none;
-    margin-right: 5px;
-    background-color: #333;
-    color: #eee;
+  flex-grow: 1;
+  padding: 10px;
+  font-size: 16px;
+  border: none;
+  border-radius: 5px;
+  margin-right: 5px;
+  background-color: #333;
+  color: #eee;
 }
-
 .search-bar button {
-    padding: 10px 15px;
-    font-size: 16px;
-    border: none;
-    border-radius: 5px;
-    background-color: #1DB954;
-    color: white;
-    cursor: pointer;
+  padding: 10px 15px;
+  font-size: 16px;
+  border: none;
+  border-radius: 5px;
+  background-color: #1DB954;
+  color: white;
+  cursor: pointer;
 }
-
 .search-results .song-item {
-    display: flex;
-    align-items: center;
-    padding: 10px;
-    border-bottom: 1px solid #444;
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border-bottom: 1px solid #444;
 }
-
-.search-results .song-item:last-child {
-    border-bottom: none;
-}
-
 .search-results .thumbnail {
-    width: 80px;
-    height: 60px;
-    margin-right: 15px;
-    object-fit: cover;
+  width: 80px;
+  height: 60px;
+  margin-right: 15px;
+  object-fit: cover;
 }
-
 .search-results .info {
-    flex-grow: 1;
+  flex-grow: 1;
 }
-
 .search-results .title {
-    font-weight: bold;
-    margin-bottom: 5px;
+  font-weight: bold;
+  margin-bottom: 5px;
 }
-
 .search-results .uploader {
-    color: #aaa;
-    font-size: 0.9em;
+  color: #aaa;
+  font-size: 0.9em;
 }
-
 .search-results button {
-    background-color: #1DB954;
-    color: #fff;
-    border: none;
-    padding: 8px 15px;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-left: 10px;
-    transition: background-color 0.3s ease;
+  background-color: #1DB954;
+  color: #fff;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-left: 10px;
+  transition: background 0.3s;
 }
-
 .search-results button:hover {
-    background-color: #1ED760;
+  background-color: #1ED760;
 }
-
-.search-results button[disabled] {
-    background-color: #444;
-    cursor: default;
-}
-
 .download-progress {
-    margin-left: 10px;
-    font-size: 0.8em;
-    color: gray;
-    flex-shrink: 0;
+  margin-left: 10px;
+  font-size: 0.8em;
+  color: gray;
 }
 
-/* Play Page */
+/* Play page */
 .album-art {
-    width: 300px;
-    height: 300px;
-    object-fit: cover;
-    margin: 0 auto 20px;
-    border-radius: 5px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
-    text-align: center;
+  width: 300px;
+  height: 300px;
+  object-fit: cover;
+  margin: 0 auto 20px;
+  border-radius: 5px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.5);
 }
-
 .player-controls {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
 }
-
 .player-controls button {
-    background: none;
-    border: none;
-    color: #eee;
-    font-size: 24px;
-    cursor: pointer;
-    margin: 0 15px;
-    padding: 10px;
-    border-radius: 50%;
-    transition: background-color 0.3s ease;
+  background: none;
+  border: none;
+  color: #eee;
+  font-size: 24px;
+  cursor: pointer;
+  margin: 0 15px;
+  padding: 10px;
+  border-radius: 50%;
+  transition: background 0.3s;
 }
-
 .player-controls button:hover {
-    background-color: #444;
+  background-color: #444;
 }
-
 .seek-bar {
-    width: 100%;
-    height: 10px;
-    background-color: #444;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-bottom: 20px;
+  width: 100%;
+  height: 10px;
+  background-color: #444;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-bottom: 20px;
 }
-
 .seek-bar .progress {
-    height: 100%;
-    width: 0%;
-    background-color: #1DB954;
-    border-radius: 5px;
+  height: 100%;
+  width: 0%;
+  background-color: #1DB954;
+  border-radius: 5px;
 }
-
 .volume-control {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
 }
-
 .volume-control label {
-    margin-right: 10px;
+  margin-right: 10px;
 }
-
 #volumeSlider {
-    -webkit-appearance: none;
-    width: 100px;
-    height: 5px;
-    border-radius: 5px;
-    background: #444;
-    outline: none;
-    opacity: 0.7;
-    -webkit-transition: .2s;
-    transition: opacity .2s;
+  -webkit-appearance: none;
+  width: 100px;
+  height: 5px;
+  border-radius: 5px;
+  background-color: #444;
+  outline: none;
+  opacity: 0.7;
+  transition: opacity 0.2s;
 }
-
 #volumeSlider:hover {
-    opacity: 1;
+  opacity: 1;
 }
-
 #volumeSlider::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 15px;
-    height: 15px;
-    border-radius: 50%;
-    background: #1DB954;
-    cursor: pointer;
+  -webkit-appearance: none;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background-color: #1DB954;
+  cursor: pointer;
 }
-
 #volumeSlider::-moz-range-thumb {
-    width: 15px;
-    height: 15px;
-    border-radius: 50%;
-    background: #1DB954;
-    cursor: pointer;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background-color: #1DB954;
+  cursor: pointer;
 }
 
 /* Queue */
 .queue {
-    margin-top: 20px;
+  margin-top: 20px;
 }
-
 .queue h3 {
-    margin-bottom: 10px;
+  margin-bottom: 10px;
 }
-
 .queue-list li {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 5px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 0;
 }
-
 .queue-list li button {
-    background-color: #7c0902;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    margin-left: 10px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
+  background-color: #7c0902;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  margin-left: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s;
 }
-
 .queue-list li button:hover {
-    background-color: #8b0000;
+  background-color: #8b0000;
 }
 
-/* Landscape Mode (Mobile) */
-@media (max-width: 768px) and (orientation: landscape) {
-    .top-bar {
-        display: none;
-    }
-
-    .main-content {
-        margin-top: 0;
-    }
-
-    #playPage {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        height: 100vh;
-    }
-
-    .album-art {
-        width: 80vw;
-        height: 80vw;
-        max-width: 500px;
-        max-height: 500px;
-        text-align: center;
-    }
-
-    .player-controls {
-        width: 90%;
-        justify-content: space-around;
-    }
-
-    .player-controls button {
-        font-size: 36px;
-    }
-
-    .seek-bar {
-        width: 90%;
-        height: 15px;
-    }
-
-    .queue {
-        display: none;
-    }
+/* Mobile Sidebar */
+.sidebar {
+  position: fixed;
+  left: -250px;
+  top: 0;
+  width: 250px;
+  height: 100vh;
+  background-color: #222;
+  transition: left 0.3s ease;
+  z-index: 1000;
+  padding-top: 60px;
 }
-
-.hidden {
+.sidebar.open {
+  left: 0;
+}
+.sidebar-nav {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.sidebar-nav li {
+  padding: 15px 20px;
+  border-bottom: 1px solid #333;
+}
+.sidebar-nav a {
+  color: white;
+  text-decoration: none;
+  font-size: 16px;
+}
+/* Hamburger menu */
+.hamburger-menu {
+  display: none;
+  position: fixed;
+  top: 15px;
+  left: 15px;
+  z-index: 1001;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+}
+@media (max-width: 768px) {
+  .hamburger-menu {
+    display: block;
+  }
+  .top-bar .nav {
     display: none;
-}
-
-/* Error Message */
-#error-message {
-    background-color: #7c0902;
-    color: white;
+  }
+  .mini-player {
+    flex-direction: row-reverse;
+    justify-content: flex-end;
     padding: 10px;
-    border-radius: 5px;
-    margin-bottom: 10px; /* Add some spacing below the error message */
-    text-align: center; /* Center the error message */
-}
-
-/* Add Page Search Results */
-/* Labels for indicating source (DB or YT) */
-.search-results .song-item .source-label {
-    background-color: #444;
-    color: white;
-    padding: 2px 5px;
-    border-radius: 3px;
+  }
+  .mini-player .song-info {
     font-size: 0.8em;
-    margin-left: 10px;
-}
-/* Progress indicator*/
-#search-loading-indicator {
-    text-align: center;
-    margin-top: 10px;
-    font-size: 0.9em;
-    color: #aaa;
+    margin: 0 10px;
+  }
+  .progress-bar {
+    width: 90%;
+    margin: 10px 0;
+  }
 }
 
-/* Use a media query to adjust the progress bar on small screens */
-@media (max-width: 768px) {
-    .progress-bar {
-      width: 90%; /* Make it almost full width */
-      margin-right: 5px;
-      margin-left: 15px;
-    }
-
-    .mini-player {
-      flex-wrap: wrap; /* Allow wrapping for smaller screens */
-      justify-content: space-between; /* Adjust the spacing for smaller screens */
-      width: 95%;
-    }
+/* Authentication styles */
+.auth-container {
+  max-width: 400px;
+  margin: 100px auto;
+  padding: 20px;
+  background-color: #222;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.7);
+  color: #eee;
+  text-align: center;
 }
-
-/* Mobile Styles */
-@media (max-width: 768px) {
-
-    /* Hide the navigation links in the top bar */
-    .top-bar .nav {
-        display: none;
-    }
-
-    /* Show the hamburger menu icon */
-    #hamburger-menu {
-        display: block;
-    }
-
-    /* Style the mini-player for smaller screens */
-    .mini-player {
-        flex-direction: row-reverse; /* Reverse the order of elements */
-        justify-content: flex-end; /* Align items to the right */
-        width: 100%;
-        padding: 10px;
-    }
-
-    .mini-player .song-info {
-        font-size: 0.8em;
-        margin-right: auto; /* Push the song info to the left */
-        margin-left: 10px;
-    }
-
-    .mini-player .controls {
-        display: flex;
-        margin-left: auto; /* Push the controls to the right */
-    }
-
-    .mini-player .controls button {
-        font-size: 14px; /* Adjust font size for smaller screens */
-        margin-left: 5px; /* Reduce margin */
-        padding: 5px;
-    }
-
-    .progress-bar {
-        width: 100%; /* Make it full width */
-        margin: 10px 0; /* Add some margin */
-    }
+.auth-container input[type="text"],
+.auth-container input[type="password"] {
+  width: 90%;
+  padding: 10px;
+  margin: 8px 0;
+  border: none;
+  border-radius: 4px;
+  background-color: #333;
+  color: #eee;
+}
+.auth-container button {
+  padding: 10px 15px;
+  background-color: #1DB954;
+  border: none;
+  border-radius: 5px;
+  color: white;
+  cursor: pointer;
+}
+.auth-container button:hover {
+  background-color: #1ED760;
+}
+/* Error message */
+#error-message {
+  background-color: #7c0902;
+  color: white;
+  padding: 10px;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  text-align: center;
 }

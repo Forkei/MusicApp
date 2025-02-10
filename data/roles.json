@@ -1,0 +1,43 @@
+{
+  "roles": {
+    "admin": {
+      "name": "admin",
+      "permissions": {
+        "AUDIO_TOGGLE": true,
+        "PLAYBACK_CONTROL": true,
+        "SKIP_CONTROL": true,
+        "REPEAT_CONTROL": true,
+        "QUEUE_MANAGEMENT": true,
+        "SEARCH_DOWNLOAD": true,
+        "DELETE_SONGS": true,
+        "ADMIN_ACCESS": true
+      }
+    },
+    "user": {
+      "name": "user",
+      "permissions": {
+        "AUDIO_TOGGLE": true,
+        "PLAYBACK_CONTROL": true,
+        "SKIP_CONTROL": true,
+        "REPEAT_CONTROL": true,
+        "QUEUE_MANAGEMENT": true,
+        "SEARCH_DOWNLOAD": true,
+        "DELETE_SONGS": false,
+        "ADMIN_ACCESS": false
+      }
+    },
+    "guest": {
+      "name": "guest",
+      "permissions": {
+        "AUDIO_TOGGLE": true,
+        "PLAYBACK_CONTROL": false,
+        "SKIP_CONTROL": false,
+        "REPEAT_CONTROL": false,
+        "QUEUE_MANAGEMENT": false,
+        "SEARCH_DOWNLOAD": false,
+        "DELETE_SONGS": false,
+        "ADMIN_ACCESS": false
+      }
+    }
+  }
+}
