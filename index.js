@@ -186,6 +186,13 @@ app.get("/api/admin/role/:role", requireAdmin, async (req, res) => {
   res.json(role);
 });
 
+app.post("/api/admin/refresh", requireAdmin, async (req, res) => {
+  songs = [];
+  await scanAudioDirectory();
+  res.json({ message: "Database refreshed" });
+});
+
+
 app.post("/api/admin/addRole", requireAdmin, async (req, res) => {
   const { name } = req.body;
   const rolesData = await loadRoles();
@@ -376,7 +383,7 @@ app.post("/api/download", async (req, res) => {
     await fsp.mkdir(IMAGES_DIR, { recursive: true });
 
     //const sanitizedTitle = title ? title.replace(/[^a-z0-9]/gi, "_") : "unknown";
-    const songTitle = title
+    const songTitle = title ? title.replace(/[^a-z0-9]/gi, " ") : "unknown";
     const outputPath = path.join(AUDIO_DIR, `${songTitle}.%(ext)s`);
     
     const options = [

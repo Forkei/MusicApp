@@ -198,7 +198,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const song = window.songs && window.songs.find((s) => s.filePath === songFilePath);
         if (song) {
           const li = document.createElement("li");
-          li.innerHTML = `<span class="drag-handle">&#9776;</span> ${index + 1}. ${song.title} - ${song.artist || "Unknown Artist"}`;
+          li.innerHTML = `<span class="drag-handle">&#9776;</span> ${index + 1}. ${song.title}`; //- ${song.artist || "Unknown Artist"}`;
           li.dataset.songId = song.filePath;
           const delBtn = document.createElement("button");
           delBtn.innerHTML = '<i class="fas fa-trash"></i>';
@@ -465,6 +465,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function downloadSong(result) {
     const url = `https://www.youtube.com/watch?v=${result.id}`;
+    const songItem = document.querySelector(`li[data-youtube-id="${result.id}"]`);
+    const downloadButton = songItem.querySelector("button");
+  
+    if (!downloadButton || downloadButton.textContent === "Queue") return;
+  
+    downloadButton.textContent = "Downloading...";
+    downloadButton.disabled = true;
+  
     fetch("/api/download", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -474,12 +482,29 @@ document.addEventListener("DOMContentLoaded", () => {
       .then(song => {
         addSongToList(song);
         window.songs.push(song);
+  
+        downloadButton.textContent = "Queue";
+        downloadButton.disabled = false;
+        downloadButton.onclick = () => {
+          if (hasPermission("QUEUE_MANAGEMENT")) {
+            socket.emit("addToQueue", song.filePath);
+          } else {
+            displayError("You don't have permission to queue songs.");
+          }
+        };
+  
+        songItem.dataset.downloaded = "true";
       })
       .catch(err => {
         console.error("Download error:", err);
         displayError("Error downloading song.");
+
+        downloadButton.textContent = "Download";
+        downloadButton.disabled = false;
       });
   }
+  
+  
 
   dbSearchButton.addEventListener("click", performDbSearch);
   dbSearchInput.addEventListener("keyup", (event) => { if (event.key === "Enter") performDbSearch(); });
