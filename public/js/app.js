@@ -100,6 +100,59 @@ document.addEventListener("DOMContentLoaded", () => {
     // Fallback: if not explicitly disabled, allow actions (for demo purposes)
     return userPermissions[permission] !== "disabled";
   }
+  
+ 
+    // Play/Pause Button Logic
+    playPauseButtonLarge.addEventListener("click", () => {
+      if (playbackState.isPlaying) {
+        socket.emit("pause");
+      } else {
+        socket.emit("play");
+      }
+    });
+    // Loop Button Logic
+    loopButton.addEventListener("click", () => {
+      socket.emit("toggleLoop");
+    });
+    // Update UI based on playback state
+    socket.on("playbackStateUpdate", (newState) => {
+      playbackState = newState;
+      updatePlaybackControls();
+      updateLoopState();
+    });
+    function updateLoopState() {
+      if (loopButton) {
+        loopButton.classList.toggle("active", playbackState.isLoopEnabled);
+      }
+    }
+
+
+    // Play/Pause Button Logic
+  playPauseButtonLarge.addEventListener("click", () => {
+    if (playbackState.isPlaying) {
+      socket.emit("pause");
+    } else {
+      socket.emit("play");
+    }
+  });
+
+  // Loop Button Logic
+  loopButton.addEventListener("click", () => {
+    socket.emit("toggleLoop");
+  });
+
+  // Update UI based on playback state
+  socket.on("playbackStateUpdate", (newState) => {
+    playbackState = newState;
+    updatePlaybackControls();
+    updateLoopState();
+  });
+
+  function updateLoopState() {
+    if (loopButton) {
+      loopButton.classList.toggle("active", playbackState.isLoopEnabled);
+    }
+  }
 
   // UI update functions
   function updateMiniPlayer(song) {
