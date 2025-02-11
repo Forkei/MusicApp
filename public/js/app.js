@@ -64,13 +64,12 @@ document.addEventListener("DOMContentLoaded", () => {
   const mobileSongInfo = document.querySelector(".mobile-song-info");
   const hamburgerMenu = document.getElementById("hamburger-menu");
   const sidebar = document.querySelector(".sidebar");
-  const adminNav = document.getElementById("adminNav");
 
   // Show admin button if user is admin
   if (window.userRole === "admin") {
-  const adminNav = document.getElementById("adminNav");
-  if (adminNav) adminNav.classList.remove("hidden");
-	}
+    const adminNav = document.getElementById("adminNav");
+    if (adminNav) adminNav.classList.remove("hidden");
+  }
 
   // Logging socket connection status
   socket.on("connect", () => {
@@ -146,7 +145,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const song = window.songs && window.songs.find((s) => s.filePath === songFilePath);
         if (song) {
           const li = document.createElement("li");
-          li.innerHTML = `${index + 1}. ${song.title} - ${song.artist || "Unknown Artist"}`;
+          li.innerHTML = `<span class="drag-handle">&#9776;</span> ${index + 1}. ${song.title} - ${song.artist || "Unknown Artist"}`;
           li.dataset.songId = song.filePath;
           const delBtn = document.createElement("button");
           delBtn.innerHTML = '<i class="fas fa-trash"></i>';
@@ -213,18 +212,28 @@ document.addEventListener("DOMContentLoaded", () => {
     li.appendChild(artistSpan);
     const queueBtn = document.createElement("button");
     queueBtn.textContent = "Queue";
-    queueBtn.addEventListener("click", () => socket.emit("addToQueue", song.filePath));
+    queueBtn.addEventListener("click", () => {
+      if (hasPermission("QUEUE_MANAGEMENT")) {
+        socket.emit("addToQueue", song.filePath);
+      } else {
+        displayError("You don't have permission to queue songs.");
+      }
+    });
     li.appendChild(queueBtn);
     const deleteBtn = document.createElement("button");
     deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
     deleteBtn.addEventListener("click", () => {
-      if (confirm(`Delete ${song.title}?`)) {
-        fetch(`/api/delete/${encodeURIComponent(song.filePath)}`, { method: "DELETE" })
-          .then(res => { if (res.ok) li.remove(); })
-          .catch(err => {
-            console.error("Delete error:", err);
-            displayError("Error deleting song.");
-          });
+      if (hasPermission("DELETE_SONGS")) {
+        if (confirm(`Delete ${song.title}?`)) {
+          fetch(`/api/delete/${encodeURIComponent(song.filePath)}`, { method: "DELETE" })
+            .then(res => { if (res.ok) li.remove(); })
+            .catch(err => {
+              console.error("Delete error:", err);
+              displayError("Error deleting song.");
+            });
+        }
+      } else {
+        displayError("You don't have permission to delete songs.");
       }
     });
     li.appendChild(deleteBtn);
@@ -258,6 +267,8 @@ document.addEventListener("DOMContentLoaded", () => {
       e.preventDefault();
       const page = link.getAttribute("data-page");
       showPage(page);
+      document.querySelectorAll('.nav a').forEach(item => item.classList.remove('active'));
+      link.classList.add('active');
     });
   });
   window.addEventListener("popstate", (event) => {
@@ -272,6 +283,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   const initialPage = window.location.pathname === "/" ? "databasePage" : `${window.location.pathname.substring(1)}Page`;
   showPage(initialPage, false);
+  document.querySelector(`.nav a[data-page="${initialPage}"]`).classList.add('active');
 
   // Mini-player controls
   playPauseButton.addEventListener("click", () => {
@@ -310,16 +322,23 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // Queue reordering with SortableJS, if available
+  // Enable drag-and-drop reordering of the queue
   if (window.Sortable && queueList) {
     new Sortable(queueList, {
       animation: 150,
-      onUpdate: (evt) => socket.emit("reorderQueue", evt.toArray()),
+      handle: '.drag-handle',
+      onEnd: (evt) => {
+        const newOrder = Array.from(queueList.children).map(item => item.dataset.songId);
+        socket.emit("reorderQueue", newOrder);
+      },
     });
   }
 
   // Search functionality
-  searchButton.addEventListener("click", () => {
+  searchButton.addEventListener("click", performSearch);
+  searchInput.addEventListener("keyup", (event) => { if (event.key === "Enter") performSearch(); });
+
+  function performSearch() {
     const query = searchInput.value;
     searchInput.disabled = true;
     searchButton.disabled = true;
@@ -341,7 +360,13 @@ document.addEventListener("DOMContentLoaded", () => {
             <span class="source-label">DB</span>
             <button>Queue</button>
           `;
-          li.querySelector("button").addEventListener("click", () => socket.emit("addToQueue", result.filePath));
+          li.querySelector("button").addEventListener("click", () => {
+            if (hasPermission("QUEUE_MANAGEMENT")) {
+              socket.emit("addToQueue", result.filePath);
+            } else {
+              displayError("You don't have permission to queue songs.");
+            }
+          });
           searchResultsList.appendChild(li);
         });
         results.yt.forEach(result => {
@@ -358,8 +383,17 @@ document.addEventListener("DOMContentLoaded", () => {
             <button>${result.isDownloaded ? "Queue" : "Download"}</button>
           `;
           li.querySelector("button").addEventListener("click", () => {
-            if (result.isDownloaded) socket.emit("addToQueue", result.filePath);
-            else downloadSong(result);
+            if (result.isDownloaded) {
+              if (hasPermission("QUEUE_MANAGEMENT")) {
+                socket.emit("addToQueue", result.filePath);
+              } else {
+                displayError("You don't have permission to queue songs.");
+              }
+            } else if (hasPermission("SEARCH_DOWNLOAD")) {
+              downloadSong(result);
+            } else {
+              displayError("You don't have permission to download songs.");
+            }
           });
           searchResultsList.appendChild(li);
         });
@@ -374,10 +408,30 @@ document.addEventListener("DOMContentLoaded", () => {
         searchButton.textContent = "Search";
         searchLoadingIndicator.classList.add("hidden");
       });
-  });
-  searchInput.addEventListener("keyup", (event) => { if (event.key === "Enter") searchButton.click(); });
+  }
 
-  dbSearchButton.addEventListener("click", () => {
+  function downloadSong(result) {
+    const url = `https://www.youtube.com/watch?v=${result.id}`;
+    fetch("/api/download", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ url, title: result.title, uploader: result.uploader })
+    })
+      .then(res => res.json())
+      .then(song => {
+        addSongToList(song);
+        window.songs.push(song);
+      })
+      .catch(err => {
+        console.error("Download error:", err);
+        displayError("Error downloading song.");
+      });
+  }
+
+  dbSearchButton.addEventListener("click", performDbSearch);
+  dbSearchInput.addEventListener("keyup", (event) => { if (event.key === "Enter") performDbSearch(); });
+
+  function performDbSearch() {
     const query = dbSearchInput.value;
     fetch(`/api/songs?q=${query}`)
       .then(res => res.json())
@@ -395,8 +449,7 @@ document.addEventListener("DOMContentLoaded", () => {
         console.error("Local search error:", err);
         displayError("Error searching local files.");
       });
-  });
-  dbSearchInput.addEventListener("keyup", (event) => { if (event.key === "Enter") dbSearchButton.click(); });
+  }
 
   playPauseButtonLarge.addEventListener("click", () => socket.emit("playbackStateUpdate", playbackState.isPlaying ? "pause" : "play"));
   prevButtonLarge.addEventListener("click", () => socket.emit("previous"));
@@ -407,6 +460,14 @@ document.addEventListener("DOMContentLoaded", () => {
     else document.getElementById("playPage").requestFullscreen().catch(err => console.error("Fullscreen error:", err));
   });
   hamburgerMenu.addEventListener("click", () => sidebar.classList.toggle("open"));
+  document.querySelectorAll(".sidebar-nav a").forEach(link => {
+    link.addEventListener("click", (e) => {
+      e.preventDefault();
+      const page = link.getAttribute("data-page");
+      showPage(page);
+      sidebar.classList.remove("open");
+    });
+  });
   if (mobilePlayPauseButton) mobilePlayPauseButton.addEventListener("click", () => socket.emit("play", playbackState));
   if (mobileNextButton) mobileNextButton.addEventListener("click", () => socket.emit("next"));
   if (mobilePrevButton) mobilePrevButton.addEventListener("click", () => socket.emit("previous"));

@@ -47,10 +47,7 @@ body {
   transition: background 0.3s;
   cursor: pointer;
 }
-.nav a:hover {
-  background-color: #444;
-}
-.nav a.active {
+.nav a:hover, .nav a.active {
   background-color: #1DB954;
   color: white;
 }
@@ -341,6 +338,10 @@ body {
   justify-content: space-between;
   align-items: center;
   padding: 5px 0;
+}
+.queue-list li .drag-handle {
+  cursor: grab;
+  margin-right: 10px;
 }
 .queue-list li button {
   background-color: #7c0902;

@@ -59,16 +59,22 @@ app.use(express.static(path.join(__dirname, "public")));
 
 // ---------- Public Endpoint: Streaming Audio ------------
 app.get("/api/stream/:encodedPath", (req, res) => {
-  // The encodedPath will be decoded to yield the actual file path
   const filePath = decodeURIComponent(req.params.encodedPath);
   const absolutePath = path.resolve(filePath);
-  // Check that the file is inside the Audio folder
   const audioDir = path.resolve(path.join(__dirname, "Audio"));
+
   if (!absolutePath.startsWith(audioDir)) {
     return res.status(403).send("Access denied");
   }
+
   res.sendFile(absolutePath, (err) => {
-    if (err) console.error("Stream error:", err);
+    if (err) {
+      if (err.code === 'ECONNABORTED') {
+        console.log("Stream aborted by the client.");
+      } else {
+        console.error("Stream error:", err);
+      }
+    }
   });
 });
 
@@ -351,6 +357,12 @@ app.get("/api/searchall", async (req, res) => {
 app.post("/api/download", async (req, res) => {
   const { url, title, uploader } = req.body;
   if (!url) return res.status(400).json({ error: "Missing URL" });
+
+  const user = req.session.user;
+  if (!user || !hasPermission(user, "SEARCH_DOWNLOAD")) {
+    return res.status(403).json({ error: "Insufficient permissions" });
+  }
+
   try {
     let videoId = null;
     if (url.includes("youtube.com") || url.includes("youtu.be")) {
@@ -359,13 +371,15 @@ app.post("/api/download", async (req, res) => {
         ? urlObj.pathname.split("/")[1]
         : urlObj.searchParams.get("v");
     }
+
     await fsp.mkdir(AUDIO_DIR, { recursive: true });
     await fsp.mkdir(IMAGES_DIR, { recursive: true });
+
     const sanitizedTitle = title ? title.replace(/[^a-z0-9]/gi, "_") : "unknown";
     const options = [
       "--extract-audio",
       "--audio-format", "mp3",
-      "--output", `${AUDIO_DIR}/${sanitizedTitle}.%(ext)s`,
+      "--output", `${AUDIO_DIR}\\${sanitizedTitle}.%(ext)s`, // Ensure Windows path compliance
       "--no-playlist",
       "-f", "bestaudio/best",
       "--write-thumbnail",
@@ -373,24 +387,29 @@ app.post("/api/download", async (req, res) => {
       "-v"
     ];
     const command = `yt-dlp ${options.join(" ")} "${url}"`;
+
     exec(command, async (error, stdout, stderr) => {
       if (error) {
         console.error("Error downloading:", error);
         return res.status(500).json({ error: "Failed to download song" });
       }
+
       const expectedFileName = `${sanitizedTitle}.mp3`;
       const expectedFilePath = path.join(AUDIO_DIR, expectedFileName);
       const expectedAlbumArtUrl = `/images/${sanitizedTitle}.jpg`;
+
       ffmpeg.ffprobe(expectedFilePath, (err, metadata) => {
         if (err) {
           console.error("Error getting metadata:", err);
           return res.status(500).json({ error: "Error getting metadata" });
         }
+
         const { duration, tags } = metadata.format;
         if (songs.some(s => s.filePath === expectedFilePath)) {
           console.log("Song already exists:", tags.title || title);
           return res.status(409).json({ error: "Song already exists" });
         }
+
         const newSong = {
           title: tags.title || title,
           artist: tags.artist,
@@ -406,11 +425,18 @@ app.post("/api/download", async (req, res) => {
         res.json(newSong);
       });
     });
+
   } catch (err) {
     console.error("Error in download endpoint:", err);
     res.status(500).json({ error: "Failed to download song" });
   }
 });
+
+// Function to check user permissions
+function hasPermission(user, permission) {
+  const userPermissions = user.permissions || {};
+  return userPermissions[permission] === "enabled";
+}
 
 // ---------- Socket.IO Real-Time Events ------------
 io.on("connection", (socket) => {
