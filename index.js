@@ -526,6 +526,7 @@ io.on("connection", (socket) => {
         playbackState.currentSong = nextSong;
         playbackState.currentTime = 0;
         playbackState.startTime = Date.now();
+        playbackState.isPlaying = true;
         io.emit("currentlyPlaying", nextSong);
         io.emit("queueUpdate", queue);
         io.emit("playbackStateUpdate", playbackState);
