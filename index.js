@@ -499,6 +499,13 @@ io.on("connection", (socket) => {
     if (serverPlaybackInterval) clearInterval(serverPlaybackInterval);
     io.emit("playbackStateUpdate", playbackState);
   });
+  
+   socket.on("toggleLoop", () => {
+    isLoopEnabled = !isLoopEnabled;
+    playbackState.isLoopEnabled = isLoopEnabled;
+    io.emit("loopState", isLoopEnabled);
+    io.emit("playbackStateUpdate", playbackState);
+  });
 
   socket.on("next", () => {
     console.log("Next requested");
