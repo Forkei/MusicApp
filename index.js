@@ -322,11 +322,28 @@ async function scanAudioDirectory() {
       }
     }
     console.log("Audio directory scan complete.");
+    if (!playbackState.currentSong) {
+      startAutoPlay();
+    }
   } catch (err) {
     console.error("Error scanning Audio directory:", err);
   }
 }
 scanAudioDirectory();
+
+// auto play songs
+function startAutoPlay() {
+  if(songs.length > 0) {
+    console.log("Auto-playing first song in the list...");
+    playbackState.currentSong = songs[0]; 
+    playbackState.isPlaying = true;
+    playbackState.currentTime = 0;
+    playbackState.startTime = Date.now();
+    startPlaybackTimer();
+    io.emit("currentlyPlaying", playbackState.currentSong);
+    io.emit("playbackStateUpdate", playbackState);
+  }
+}
 
 // ---------- YouTube Search Endpoint ------------
 app.get("/api/searchall", async (req, res) => {
@@ -442,7 +459,11 @@ function hasPermission(user, permission) {
 io.on("connection", (socket) => {
   console.log("New client connected:", socket.id);
   socket.emit("playbackStateUpdate", playbackState);
-  if (playbackState.currentSong) socket.emit("currentlyPlaying", playbackState.currentSong);
+  if (playbackState.currentSong) { 
+    socket.emit("currentlyPlaying", playbackState.currentSong);
+  } else if(songs.lengh > 0) {
+    startAutoPlay();
+  }
   socket.emit("queueUpdate", queue);
   socket.emit("loopState", isLoopEnabled);
 
