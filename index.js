@@ -316,6 +316,15 @@ async function scanAudioDirectory() {
       }
     }
     console.log("Audio directory scan complete.");
+    if(!playbackState.isPlaying && songs.length > 0) {
+      playbackState.currentSong = songs[0];
+      playbackState.isPlaying = true;
+      playbackState.currentTime = 0;
+      startPlaybackTimer;
+      io.emit("playbackStateUpdate", playbackState);
+      io.emit("currentlyPlaying", playbackState.currentSong);
+      console.log(`Autoplaying: ${playbackState.currentSong.title}`);
+    }
   } catch (err) {
     console.error("Error scanning Audio directory:", err);
   }
