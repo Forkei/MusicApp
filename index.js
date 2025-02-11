@@ -456,6 +456,9 @@ io.on("connection", (socket) => {
         playbackState.currentSong = song;
         playbackState.isPlaying = true;
         playbackState.currentTime = 0;
+        if (!playbackState.clientsPlayingAudio.includes(socket.id)) {
+          playbackState.clientsPlayingAudio.push(socket.id);
+        }
         startPlaybackTimer();
         io.emit("playbackStateUpdate", playbackState);
         io.emit("currentlyPlaying", song);
