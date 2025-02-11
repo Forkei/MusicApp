@@ -375,11 +375,14 @@ app.post("/api/download", async (req, res) => {
     await fsp.mkdir(AUDIO_DIR, { recursive: true });
     await fsp.mkdir(IMAGES_DIR, { recursive: true });
 
-    const sanitizedTitle = title ? title.replace(/[^a-z0-9]/gi, "_") : "unknown";
+    //const sanitizedTitle = title ? title.replace(/[^a-z0-9]/gi, "_") : "unknown";
+    const songTitle = title
+    const outputPath = path.join(AUDIO_DIR, `${songTitle}.%(ext)s`);
+    
     const options = [
       "--extract-audio",
       "--audio-format", "mp3",
-      "--output", `${AUDIO_DIR}\\${sanitizedTitle}.%(ext)s`, // Ensure Windows path compliance
+      "--output", `"${outputPath}"`,  
       "--no-playlist",
       "-f", "bestaudio/best",
       "--write-thumbnail",
@@ -394,9 +397,16 @@ app.post("/api/download", async (req, res) => {
         return res.status(500).json({ error: "Failed to download song" });
       }
 
-      const expectedFileName = `${sanitizedTitle}.mp3`;
+      const expectedFileName = `${songTitle}.mp3`;
       const expectedFilePath = path.join(AUDIO_DIR, expectedFileName);
-      const expectedAlbumArtUrl = `/images/${sanitizedTitle}.jpg`;
+      const expectedAlbumArtUrl = `public/images/${songTitle}.jpg`;
+
+
+      const expectedAlbumArtPath = path.join(AUDIO_DIR, `${songTitle}.jpg`);
+      const newAlbumArtPath = path.join(IMAGES_DIR, `${songTitle}.jpg`);
+      fsp.rename(expectedAlbumArtPath, newAlbumArtPath).catch(() => {
+        console.error("Failed to move album art to /public/images/");
+      });
 
       ffmpeg.ffprobe(expectedFilePath, (err, metadata) => {
         if (err) {

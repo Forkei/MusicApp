@@ -5,14 +5,8 @@
     "role": "admin"
   },
   {
-    "username": "forkei2",
-    "password": "fart",
-    "role": "user"
-  },
-  {
-    "username": "forkei3",
-    "password": "creapy",
-    "role": "admin",
-    "permissions": {}
+    "username": "quang",
+    "password": "test",
+    "role": "admin"
   }
 ]
