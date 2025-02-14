@@ -67,19 +67,17 @@ body {
 .mini-player {
   display: flex;
   align-items: center;
+  gap: 10px;
+  margin-left: auto;
+  padding-right: 15px;
 }
 .mini-player .song-info {
   margin-right: 15px;
   font-size: 0.9em;
   white-space: nowrap;
   overflow: hidden;
+  text-overflow: ellipsis;
   max-width: 150px;
-  animation: scrollText 20s linear infinite;
-}
-
-@keyframes scrollText {
-  0% { transform: translateX(100%); }
-  100% { transform: translateX(-100%); }
 }
 .mini-player .controls button {
   background: none;
@@ -417,6 +415,17 @@ body {
   color: white;
   font-size: 24px;
   cursor: pointer;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s ease;
+}
+
+.hamburger-menu:hover {
+  background-color: rgba(255, 255, 255, 0.1);
 }
 @media (max-width: 768px) {
   body {
@@ -424,8 +433,11 @@ body {
   }
   
   .hamburger-menu {
+    display: flex;
+  }
+
+  .mobile-only {
     display: block;
-    padding: 15px;
   }
   
   .top-bar .nav {
@@ -624,4 +636,7 @@ body {
   .top-bar {
     display: none;
   }
+}
+.mobile-only {
+  display: none;
 }
