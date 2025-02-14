@@ -508,21 +508,36 @@ app.post("/api/download", async (req, res) => {
         console.error("No video found or failed to move video:", err);
       }
 
-      ffmpeg.ffprobe(expectedFilePath, async (err, metadata) => {
-        if (err) {
-          console.error("Error getting metadata:", err);
-          // Create basic metadata if ffprobe fails
-          const basicMetadata = {
-            format: {
-              duration: 0, // Will be updated on first play
-              tags: {
-                title: title || songTitle,
-                artist: uploader || "Unknown Artist",
-                album: "Unknown Album"
+      // Create temp directory if it doesn't exist
+      const tempDir = path.join(__dirname, 'temp');
+      await fsp.mkdir(tempDir, { recursive: true });
+      
+      // Create temp copy of file
+      const tempFilePath = path.join(tempDir, path.basename(expectedFilePath));
+      await fsp.copyFile(expectedFilePath, tempFilePath);
+
+      ffmpeg.ffprobe(tempFilePath, async (err, metadata) => {
+        try {
+          if (err) {
+            console.error("Error getting metadata:", err);
+            // Create basic metadata if ffprobe fails
+            const basicMetadata = {
+              format: {
+                duration: 0, // Will be updated on first play
+                tags: {
+                  title: title || songTitle,
+                  artist: uploader || "Unknown Artist",
+                  album: "Unknown Album"
+                }
               }
-            }
-          };
-          metadata = basicMetadata;
+            };
+            metadata = basicMetadata;
+          }
+          
+          // Clean up temp file after ffprobe completes
+          await fsp.unlink(tempFilePath);
+        } catch (cleanupErr) {
+          console.error("Error cleaning up temp file:", cleanupErr);
         }
 
         const { duration, tags } = metadata.format;
