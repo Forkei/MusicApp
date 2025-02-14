@@ -548,8 +548,9 @@ document.addEventListener("DOMContentLoaded", () => {
         
         // Sync playback state
         if (playbackState.isPlaying) {
+          // Only sync if we're more than 2 seconds out of sync
           const timeDiff = Math.abs(audioPlayer.currentTime - playbackState.currentTime);
-          if (timeDiff > 0.5) {
+          if (timeDiff > 2) {
             audioPlayer.currentTime = playbackState.currentTime;
           }
           audioPlayer.volume = localVolume;

@@ -348,7 +348,7 @@ let isLoopEnabled = false;
 
 // ---------- Playback Timer (Server Source-of-Truth) ------------
 let serverPlaybackInterval = null;
-const TICK_INTERVAL = 250;
+const TICK_INTERVAL = 1000; // Reduce update frequency to once per second
 
 function startPlaybackTimer() {
   if (serverPlaybackInterval) clearInterval(serverPlaybackInterval);
