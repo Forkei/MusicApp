@@ -385,6 +385,7 @@ body {
   z-index: 1000;
   padding-top: 60px;
   box-shadow: 2px 0 10px rgba(0,0,0,0.5);
+  display: none;
 }
 .sidebar.open {
   left: 0;
@@ -561,7 +562,7 @@ body {
   background-color: #080808;
   padding: 10px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-  z-index: 99;
+  z-index: 999;
 }
 
 .mobile-header {
@@ -628,13 +629,22 @@ body {
   padding: 0 10px;
 }
 
-@media (max-width: 768px) {
+@media screen and (max-width: 768px) {
   .mobile-top-bar {
-    display: block;
+    display: block !important;
   }
   
   .top-bar {
-    display: none;
+    display: none !important;
+  }
+
+  .sidebar {
+    display: block !important;
+  }
+
+  .main-content {
+    margin-top: 120px;
+    padding: 0 15px;
   }
 }
 .mobile-only {
