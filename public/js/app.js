@@ -335,6 +335,8 @@ document.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll(".page").forEach(p => {
       p.classList.toggle("hidden", p.id !== page);
     });
+    // Hide top bar controls when on Play page
+    document.querySelector(".mini-player").classList.toggle("hidden", page === "playPage");
     if (updateUrl) history.pushState({ page }, "", page === "databasePage" ? "/" : `/${page.replace("Page", "")}`);
   }
   const initialPage = window.location.pathname === "/" ? "databasePage" : `${window.location.pathname.substring(1)}Page`;
@@ -374,11 +376,18 @@ document.addEventListener("DOMContentLoaded", () => {
   audioPlayer.addEventListener("ended", () => socket.emit("next"));
   audioPlayer.addEventListener("timeupdate", () => {
     if (!isSeeking && playbackState.currentSong && audioPlayer.duration) {
-      progressBar.style.width = `${(audioPlayer.currentTime / audioPlayer.duration) * 100}%`;
+      // Update all progress bars
+      const progress = (audioPlayer.currentTime / audioPlayer.duration) * 100;
+      progressBar.style.width = `${progress}%`;
       // Update mobile progress bar
       const mobileProgressBar = document.querySelector('.mobile-progress .progress');
       if (mobileProgressBar) {
-        mobileProgressBar.style.width = `${(audioPlayer.currentTime / audioPlayer.duration) * 100}%`;
+        mobileProgressBar.style.width = `${progress}%`;
+      }
+      // Update play page progress bar
+      const playPageProgress = document.querySelector('.seek-bar .progress');
+      if (playPageProgress) {
+        playPageProgress.style.width = `${progress}%`;
       }
     }
   });
