@@ -618,8 +618,10 @@ body {
 .mobile-controls {
   display: flex;
   justify-content: center;
+  align-items: center;
   gap: 20px;
   margin: 10px 0;
+  padding: 0 10px;
 }
 
 .mobile-controls button {
