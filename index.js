@@ -62,10 +62,15 @@ app.get("/api/stream/:encodedPath", (req, res) => {
   try {
     const filePath = decodeURIComponent(req.params.encodedPath);
     const audioDir = path.resolve(path.join(__dirname, "Audio"));
-    const absolutePath = path.join(audioDir, filePath.replace(/^.*[\\\/]/, '')).replace(/\\/g, '/');
+    // Allow full paths that are within the Audio directory
+    const absolutePath = path.resolve(filePath);
+    
+    // Normalize paths for comparison
+    const normalizedAudioDir = path.normalize(audioDir);
+    const normalizedPath = path.normalize(absolutePath);
 
     // Verify the file is within the audio directory
-    if (!absolutePath.startsWith(audioDir)) {
+    if (!normalizedPath.startsWith(normalizedAudioDir)) {
       console.error("Access denied - path outside audio directory:", absolutePath);
       return res.status(403).send("Access denied");
     }

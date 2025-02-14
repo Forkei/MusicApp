@@ -287,7 +287,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     
     // Properly encode the file path for URLs
-    const encodedPath = encodeURIComponent(song.filePath.replace(/\\/g, '/'));
+    const encodedPath = encodeURIComponent(song.filePath);
     const songUrl = `/api/stream/${encodedPath}`;
     
     console.log("Setting audio source:", songUrl); // Debug log
