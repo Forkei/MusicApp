@@ -431,24 +431,19 @@ body {
   top: 15px;
   left: 15px;
   z-index: 1001;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: transparent;
+  border: none;
   cursor: pointer;
   width: 40px;
   height: 40px;
-  border-radius: 12px;
-  transition: all 0.2s ease;
-  backdrop-filter: blur(5px);
-  padding: 0;
+  padding: 8px;
 }
 
 .hamburger-icon {
-  width: 18px;
-  height: 14px;
+  width: 24px;
+  height: 18px;
   position: relative;
-  margin: 13px auto;
-  transform: rotate(0deg);
-  transition: .5s ease-in-out;
+  margin: 0 auto;
 }
 
 .hamburger-icon span {
@@ -457,7 +452,7 @@ body {
   height: 2px;
   width: 100%;
   background: white;
-  border-radius: 2px;
+  border-radius: 1px;
   opacity: 1;
   left: 0;
   transform: rotate(0deg);
@@ -469,35 +464,25 @@ body {
 }
 
 .hamburger-icon span:nth-child(2) {
-  top: 6px;
+  top: 8px;
 }
 
 .hamburger-icon span:nth-child(3) {
-  top: 12px;
+  top: 16px;
 }
 
 .sidebar.open .hamburger-icon span:nth-child(1) {
-  top: 6px;
-  transform: rotate(135deg);
+  top: 8px;
+  transform: rotate(45deg);
 }
 
 .sidebar.open .hamburger-icon span:nth-child(2) {
   opacity: 0;
-  left: -60px;
 }
 
 .sidebar.open .hamburger-icon span:nth-child(3) {
-  top: 6px;
-  transform: rotate(-135deg);
-}
-
-.hamburger-menu:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-  transform: scale(1.05);
-}
-
-.hamburger-menu:active {
-  transform: scale(0.95);
+  top: 8px;
+  transform: rotate(-45deg);
 }
 @media (max-width: 768px) {
   body {
