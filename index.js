@@ -694,12 +694,6 @@ io.on("connection", (socket) => {
     playbackState.currentTime = time;
     playbackState.startTime = Date.now() - time * 1000;
     io.emit("playbackStateUpdate", playbackState);
-    
-    // Sync video time if playing
-    const videoPlayer = document.getElementById("song-video");
-    if (videoPlayer && !videoPlayer.classList.contains("hidden")) {
-      videoPlayer.currentTime = time;
-    }
   });
 
   socket.on("toggleAudioOutput", (enabled) => {
