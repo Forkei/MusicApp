@@ -580,7 +580,10 @@ document.addEventListener("DOMContentLoaded", () => {
     if (document.fullscreenElement) document.exitFullscreen();
     else document.getElementById("playPage").requestFullscreen().catch(err => console.error("Fullscreen error:", err));
   });
-  hamburgerMenu.addEventListener("click", () => sidebar.classList.toggle("open"));
+  hamburgerMenu.addEventListener("click", () => {
+    sidebar.classList.toggle("open");
+    hamburgerMenu.style.left = sidebar.classList.contains("open") ? "295px" : "15px";
+  });
   document.querySelectorAll(".sidebar-nav a").forEach(link => {
     link.addEventListener("click", (e) => {
       e.preventDefault();
