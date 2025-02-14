@@ -589,7 +589,13 @@ document.addEventListener("DOMContentLoaded", () => {
       sidebar.classList.remove("open");
     });
   });
-  if (mobilePlayPauseButton) mobilePlayPauseButton.addEventListener("click", () => socket.emit("play", playbackState));
+  if (mobilePlayPauseButton) mobilePlayPauseButton.addEventListener("click", () => {
+    if (playbackState.isPlaying) {
+      socket.emit("pause");
+    } else {
+      socket.emit("play");
+    }
+  });
   if (mobileNextButton) mobileNextButton.addEventListener("click", () => socket.emit("next"));
   if (mobilePrevButton) mobilePrevButton.addEventListener("click", () => socket.emit("previous"));
   if (mobileAudioToggleButton) {
