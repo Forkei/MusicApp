@@ -291,6 +291,8 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!audioPlayer.src || !audioPlayer.src.includes(encodeURIComponent(song.filePath))) {
       audioPlayer.src = songUrl;
       audioPlayer.load();
+      // Set initial volume
+      audioPlayer.volume = playbackState.clientsPlayingAudio.includes(socket.id) ? localVolume : 0;
     }
     
     audioPlayer.currentTime = playbackState.currentTime;
@@ -464,9 +466,14 @@ document.addEventListener("DOMContentLoaded", () => {
     console.log("Toggle audio clicked. Current:", enabled);
     socket.emit("toggleAudioOutput", !enabled);
     updateAudioToggleButton();
-    if (!enabled && playbackState.isPlaying) {
+    if (!enabled && playbackState.isPlaying && playbackState.currentSong) {
+      audioPlayer.volume = localVolume;
       playSong(playbackState.currentSong);
       audioPlayer.currentTime = playbackState.currentTime;
+      audioPlayer.play().catch(console.error);
+    } else {
+      audioPlayer.volume = 0;
+      audioPlayer.pause();
     }
   });
   volumeSlider.addEventListener("input", () => {
@@ -526,20 +533,26 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Handle audio playback
     if (playbackState.clientsPlayingAudio.includes(socket.id)) {
-      if (playbackState.currentSong && (!audioPlayer.src || !audioPlayer.src.includes(encodeURIComponent(playbackState.currentSong.filePath)))) {
-        playSong(playbackState.currentSong);
-      }
-      
-      if (playbackState.isPlaying) {
-        const timeDiff = Math.abs(audioPlayer.currentTime - playbackState.currentTime);
-        if (timeDiff > 0.5) {
-          audioPlayer.currentTime = playbackState.currentTime;
+      if (playbackState.currentSong) {
+        // Initialize audio if needed
+        if (!audioPlayer.src || !audioPlayer.src.includes(encodeURIComponent(playbackState.currentSong.filePath))) {
+          playSong(playbackState.currentSong);
         }
-        audioPlayer.play().catch(console.error);
-      } else {
-        audioPlayer.pause();
+        
+        // Sync playback state
+        if (playbackState.isPlaying) {
+          const timeDiff = Math.abs(audioPlayer.currentTime - playbackState.currentTime);
+          if (timeDiff > 0.5) {
+            audioPlayer.currentTime = playbackState.currentTime;
+          }
+          audioPlayer.volume = localVolume;
+          audioPlayer.play().catch(console.error);
+        } else {
+          audioPlayer.pause();
+        }
       }
     } else {
+      audioPlayer.volume = 0;
       audioPlayer.pause();
     }
 
