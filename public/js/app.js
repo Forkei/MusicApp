@@ -519,9 +519,14 @@ document.addEventListener("DOMContentLoaded", () => {
       })
       .catch(err => {
         console.error("Download error:", err);
-        displayError(`Error downloading song: ${err.message}`);
+        const errorMsg = err.message.includes("Insufficient permissions") 
+          ? "You don't have permission to download songs"
+          : `Error downloading song: ${err.message}`;
+        displayError(errorMsg);
 
-        downloadButton.textContent = "Retry Download";
+        downloadButton.textContent = err.message.includes("Insufficient permissions") 
+          ? "No Permission" 
+          : "Retry Download";
         downloadButton.disabled = false;
         if (progressSpan) progressSpan.remove();
       });
