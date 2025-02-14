@@ -197,12 +197,24 @@ document.addEventListener("DOMContentLoaded", () => {
       const fullText = `${song.title} - ${song.artist || "Unknown Artist"}`;
       miniPlayerSongInfo.textContent = fullText;
       if (mobileSongInfo) {
-        const mobileText = fullText.length > 40 ? fullText.substring(0, 37) + "..." : fullText;
+        const mobileText = fullText.length > 30 ? fullText.substring(0, 27) + "..." : fullText;
         mobileSongInfo.textContent = mobileText;
+      }
+      // Update Play tab title for mobile
+      if (currentSongTitle) {
+        const titleText = song.title.length > 25 ? song.title.substring(0, 22) + "..." : song.title;
+        currentSongTitle.textContent = titleText;
+      }
+      if (currentSongArtist) {
+        const artistText = song.artist && song.artist.length > 25 ? 
+          song.artist.substring(0, 22) + "..." : (song.artist || "Unknown Artist");
+        currentSongArtist.textContent = artistText;
       }
     } else {
       miniPlayerSongInfo.textContent = "No song playing";
       if (mobileSongInfo) mobileSongInfo.textContent = "No song playing";
+      if (currentSongTitle) currentSongTitle.textContent = "No song playing";
+      if (currentSongArtist) currentSongArtist.textContent = "";
     }
   }
 
