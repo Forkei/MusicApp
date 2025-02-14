@@ -503,6 +503,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const progress = (newState.currentTime / newState.currentSong.duration) * 100;
       // Update all progress bars regardless of mute state
       const allProgressBars = [
+        document.querySelector('.mini-player .progress'),
         document.querySelector('.mobile-progress .progress'),
         document.querySelector('.seek-bar .progress')
       ];
