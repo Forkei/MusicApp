@@ -449,7 +449,7 @@ app.post("/api/download", async (req, res) => {
         console.error("Failed to move album art:", err);
       }
 
-      ffmpeg.ffprobe(expectedFilePath, (err, metadata) => {
+      ffmpeg.ffprobe(expectedFilePath, async (err, metadata) => {
         if (err) {
           console.error("Error getting metadata:", err);
           return res.status(500).json({ error: "Error getting metadata" });
