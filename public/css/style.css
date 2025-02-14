@@ -571,6 +571,7 @@ body {
 .mobile-top-bar {
   display: none;
   position: fixed;
+  transition: opacity 0.3s ease;
   top: 0;
   left: 0;
   width: 100%;

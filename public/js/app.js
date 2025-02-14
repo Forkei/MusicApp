@@ -335,8 +335,9 @@ document.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll(".page").forEach(p => {
       p.classList.toggle("hidden", p.id !== page);
     });
-    // Hide top bar controls when on Play page
+    // Hide top bar controls and mobile controls when on Play page
     document.querySelector(".mini-player").classList.toggle("hidden", page === "playPage");
+    document.querySelector(".mobile-top-bar").classList.toggle("hidden", page === "playPage");
     if (updateUrl) history.pushState({ page }, "", page === "databasePage" ? "/" : `/${page.replace("Page", "")}`);
   }
   const initialPage = window.location.pathname === "/" ? "databasePage" : `${window.location.pathname.substring(1)}Page`;

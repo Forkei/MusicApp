@@ -467,8 +467,6 @@ io.on("connection", (socket) => {
     console.log("Adding to queue:", songFilePath);
     const song = songs.find(s => s.filePath === songFilePath);
     if (song) {
-      queue.push(songFilePath);
-      io.emit("queueUpdate", queue);
       if (!playbackState.currentSong) {
         playbackState.currentSong = song;
         playbackState.isPlaying = true;
@@ -479,6 +477,9 @@ io.on("connection", (socket) => {
         startPlaybackTimer();
         io.emit("playbackStateUpdate", playbackState);
         io.emit("currentlyPlaying", song);
+      } else {
+        queue.push(songFilePath);
+        io.emit("queueUpdate", queue);
       }
     }
   });
