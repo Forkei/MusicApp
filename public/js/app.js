@@ -222,13 +222,29 @@ document.addEventListener("DOMContentLoaded", () => {
     if (mobilePlayPauseButton) mobilePlayPauseButton.innerHTML = playbackState.isPlaying ? '<i class="fas fa-pause"></i>' : '<i class="fas fa-play"></i>';
   }
 
-  function seekToPosition(event) {
-    const rect = progressBar.getBoundingClientRect();
-    const seekPos = (event.clientX - rect.left) / rect.width;
-    const seekTime = seekPos * audioPlayer.duration;
-    audioPlayer.currentTime = seekTime;
-    progressBar.style.width = `${seekPos * 100}%`;
+  function formatTime(seconds) {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const secs = Math.floor(seconds % 60);
+    
+    if (hours > 0) {
+      return `${hours}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
+    return `${minutes}:${secs.toString().padStart(2, '0')}`;
+  }
+
+  function seekToPosition(event, progressElement) {
+    const rect = progressElement.getBoundingClientRect();
+    const seekPos = Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width));
+    const seekTime = seekPos * (playbackState.currentSong?.duration || 0);
     socket.emit("seek", seekTime);
+  }
+
+  function updateProgressTooltip(event, progressElement) {
+    const rect = progressElement.getBoundingClientRect();
+    const hoverPos = Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width));
+    const hoverTime = hoverPos * (playbackState.currentSong?.duration || 0);
+    progressElement.setAttribute('title', formatTime(hoverTime));
   }
 
   function updateQueueDisplay() {
@@ -445,31 +461,38 @@ document.addEventListener("DOMContentLoaded", () => {
     localVolume = parseFloat(volumeSlider.value);
     audioPlayer.volume = localVolume;
   });
-  progressBar.addEventListener("mousedown", (event) => {
-    isSeeking = true;
-    seekToPosition(event);
+  // Progress bar event listeners
+  const progressBars = [progressBar, document.querySelector('.seek-bar'), document.querySelector('.mobile-progress .progress-bar')];
+  progressBars.forEach(bar => {
+    if (!bar) return;
+    
+    bar.addEventListener("mousedown", (event) => {
+      isSeeking = true;
+      seekToPosition(event, bar);
+    });
+    
+    bar.addEventListener("mousemove", (event) => {
+      updateProgressTooltip(event, bar);
+      if (isSeeking) seekToPosition(event, bar);
+    });
+    
+    bar.addEventListener("mouseup", () => { isSeeking = false; });
+    bar.addEventListener("mouseleave", () => { isSeeking = false; });
   });
-  progressBar.addEventListener("mousemove", (event) => {
-    if (isSeeking) seekToPosition(event);
-  });
-  progressBar.addEventListener("mouseup", () => { isSeeking = false; });
-  progressBar.addEventListener("mouseleave", () => { isSeeking = false; });
   audioPlayer.addEventListener("ended", () => socket.emit("next"));
-  audioPlayer.addEventListener("timeupdate", () => {
-    if (!isSeeking && playbackState.currentSong && audioPlayer.duration) {
+  // Update progress even when muted
+  socket.on("playbackStateUpdate", (newState) => {
+    if (!isSeeking && newState.currentSong) {
+      const progress = (newState.currentTime / newState.currentSong.duration) * 100;
       // Update all progress bars
-      const progress = (audioPlayer.currentTime / audioPlayer.duration) * 100;
-      progressBar.style.width = `${progress}%`;
-      // Update mobile progress bar
-      const mobileProgressBar = document.querySelector('.mobile-progress .progress');
-      if (mobileProgressBar) {
-        mobileProgressBar.style.width = `${progress}%`;
-      }
-      // Update play page progress bar
-      const playPageProgress = document.querySelector('.seek-bar .progress');
-      if (playPageProgress) {
-        playPageProgress.style.width = `${progress}%`;
-      }
+      const allProgressBars = [
+        progressBar,
+        document.querySelector('.mobile-progress .progress'),
+        document.querySelector('.seek-bar .progress')
+      ];
+      allProgressBars.forEach(bar => {
+        if (bar) bar.style.width = `${progress}%`;
+      });
     }
   });
 
