@@ -467,19 +467,39 @@ document.addEventListener("DOMContentLoaded", () => {
     const url = `https://www.youtube.com/watch?v=${result.id}`;
     const songItem = document.querySelector(`li[data-youtube-id="${result.id}"]`);
     const downloadButton = songItem.querySelector("button");
+    const infoDiv = songItem.querySelector(".info");
   
     if (!downloadButton || downloadButton.textContent === "Queue") return;
   
+    // Add progress indicator
+    const progressSpan = document.createElement("span");
+    progressSpan.className = "download-progress";
+    progressSpan.textContent = "0%";
+    infoDiv.appendChild(progressSpan);
+    
     downloadButton.textContent = "Downloading...";
     downloadButton.disabled = true;
   
     fetch("/api/download", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ url, title: result.title, uploader: result.uploader })
+      body: JSON.stringify({ 
+        url, 
+        title: result.title, 
+        uploader: result.uploader 
+      })
     })
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        return res.json();
+      })
       .then(song => {
+        if (!song || !song.filePath) {
+          throw new Error("Invalid song data received");
+        }
+        
         addSongToList(song);
         window.songs.push(song);
   
@@ -494,13 +514,15 @@ document.addEventListener("DOMContentLoaded", () => {
         };
   
         songItem.dataset.downloaded = "true";
+        progressSpan.remove();
       })
       .catch(err => {
         console.error("Download error:", err);
-        displayError("Error downloading song.");
+        displayError(`Error downloading song: ${err.message}`);
 
-        downloadButton.textContent = "Download";
+        downloadButton.textContent = "Retry Download";
         downloadButton.disabled = false;
+        if (progressSpan) progressSpan.remove();
       });
   }
   
