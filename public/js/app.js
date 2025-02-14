@@ -286,31 +286,33 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
     const songUrl = `/api/stream/${encodeURIComponent(song.filePath)}`;
-    audioPlayer.src = songUrl;
-    audioPlayer.load();
+    
+    // Only set src if it's different
+    if (!audioPlayer.src || !audioPlayer.src.includes(encodeURIComponent(song.filePath))) {
+      audioPlayer.src = songUrl;
+      audioPlayer.load();
+    }
+    
     audioPlayer.currentTime = playbackState.currentTime;
 
     const albumArt = document.getElementById("album-art");
     const videoPlayer = document.getElementById("song-video");
 
-    if (song.videoPath) {
-      // Show video, hide album art
-      if (albumArt) albumArt.classList.add("hidden");
-      if (videoPlayer) {
-        videoPlayer.classList.remove("hidden");
+    // Update visuals
+    if (albumArt) {
+      albumArt.src = song.albumArtPath || "/images/placeholder.jpg";
+      albumArt.onerror = () => (albumArt.src = "/images/placeholder.jpg");
+      albumArt.classList.toggle("hidden", !!song.videoPath);
+    }
+
+    if (videoPlayer) {
+      if (song.videoPath) {
         videoPlayer.src = song.videoPath;
         videoPlayer.currentTime = playbackState.currentTime;
-      }
-    } else {
-      // Show album art, hide video
-      if (videoPlayer) {
-        videoPlayer.classList.add("hidden");
+        videoPlayer.classList.remove("hidden");
+      } else {
         videoPlayer.src = "";
-      }
-      if (albumArt) {
-        albumArt.classList.remove("hidden");
-        albumArt.src = song.albumArtPath || "/images/placeholder.jpg";
-        albumArt.onerror = () => (albumArt.src = "/images/placeholder.jpg");
+        videoPlayer.classList.add("hidden");
       }
     }
     audioPlayer.onloadeddata = () => {
@@ -520,26 +522,27 @@ document.addEventListener("DOMContentLoaded", () => {
       allProgressBars.forEach(bar => {
         if (bar) bar.style.width = `${progress}%`;
       });
+    }
 
-      // Handle audio playback sync
-      if (playbackState.clientsPlayingAudio.includes(socket.id)) {
-        if (!audioPlayer.src || audioPlayer.src !== `/api/stream/${encodeURIComponent(newState.currentSong.filePath)}`) {
-          playSong(newState.currentSong);
+    // Handle audio playback
+    if (playbackState.clientsPlayingAudio.includes(socket.id)) {
+      if (playbackState.currentSong && (!audioPlayer.src || !audioPlayer.src.includes(encodeURIComponent(playbackState.currentSong.filePath)))) {
+        playSong(playbackState.currentSong);
+      }
+      
+      if (playbackState.isPlaying) {
+        const timeDiff = Math.abs(audioPlayer.currentTime - playbackState.currentTime);
+        if (timeDiff > 0.5) {
+          audioPlayer.currentTime = playbackState.currentTime;
         }
-        
-        if (playbackState.isPlaying) {
-          const timeDiff = Math.abs(audioPlayer.currentTime - newState.currentTime);
-          if (timeDiff > 0.5) {
-            audioPlayer.currentTime = newState.currentTime;
-          }
-          audioPlayer.play().catch(console.error);
-        } else {
-          audioPlayer.pause();
-        }
+        audioPlayer.play().catch(console.error);
       } else {
         audioPlayer.pause();
       }
+    } else {
+      audioPlayer.pause();
     }
+
     updatePlaybackControls();
     audioPlayer.volume = playbackState.clientsPlayingAudio.includes(socket.id) ? localVolume : 0;
     updateAudioToggleButton();
