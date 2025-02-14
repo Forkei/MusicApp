@@ -62,7 +62,7 @@ app.get("/api/stream/:encodedPath", (req, res) => {
   try {
     const filePath = decodeURIComponent(req.params.encodedPath);
     const audioDir = path.resolve(path.join(__dirname, "Audio"));
-    const absolutePath = path.resolve(path.join(audioDir, path.basename(filePath))).replace(/\\/g, '/');
+    const absolutePath = path.join(audioDir, filePath.replace(/^.*[\\\/]/, '')).replace(/\\/g, '/');
 
     // Verify the file is within the audio directory
     if (!absolutePath.startsWith(audioDir)) {
