@@ -435,54 +435,23 @@ body {
   cursor: pointer;
   width: 40px;
   height: 40px;
-  padding: 8px;
   background: transparent;
+  color: white;
+  font-size: 24px;
+  padding: 0;
 }
 
-.hamburger-icon {
-  width: 20px;
-  height: 14px;
-  position: relative;
-  margin: 0 auto;
-}
-
-.hamburger-icon span {
-  display: block;
+.sidebar-close {
   position: absolute;
-  height: 1.5px;
-  width: 100%;
-  background: white;
-  border-radius: 1px;
-  opacity: 1;
-  left: 0;
-  transform: rotate(0deg);
-  transition: .25s ease-in-out;
-}
-
-.hamburger-icon span:nth-child(1) {
-  top: 0px;
-}
-
-.hamburger-icon span:nth-child(2) {
-  top: 6px;
-}
-
-.hamburger-icon span:nth-child(3) {
-  top: 12px;
-}
-
-.sidebar.open .hamburger-icon span:nth-child(1) {
-  top: 8px;
-  transform: rotate(45deg);
-}
-
-.sidebar.open .hamburger-icon span:nth-child(2) {
-  opacity: 0;
-}
-
-.sidebar.open .hamburger-icon span:nth-child(3) {
-  top: 8px;
-  transform: rotate(-45deg);
+  top: 15px;
+  right: 15px;
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 8px;
+  z-index: 1003;
 }
 @media (max-width: 768px) {
   body {

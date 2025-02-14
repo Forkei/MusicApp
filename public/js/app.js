@@ -580,9 +580,14 @@ document.addEventListener("DOMContentLoaded", () => {
     if (document.fullscreenElement) document.exitFullscreen();
     else document.getElementById("playPage").requestFullscreen().catch(err => console.error("Fullscreen error:", err));
   });
+  const sidebarCloseBtn = document.querySelector('.sidebar-close');
+  
   hamburgerMenu.addEventListener("click", () => {
-    sidebar.classList.toggle("open");
-    hamburgerMenu.style.left = sidebar.classList.contains("open") ? "295px" : "15px";
+    sidebar.classList.add("open");
+  });
+
+  sidebarCloseBtn.addEventListener("click", () => {
+    sidebar.classList.remove("open");
   });
   document.querySelectorAll(".sidebar-nav a").forEach(link => {
     link.addEventListener("click", (e) => {
