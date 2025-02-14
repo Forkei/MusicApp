@@ -462,10 +462,11 @@ document.addEventListener("DOMContentLoaded", () => {
     audioPlayer.volume = localVolume;
   });
   // Progress bar event listeners
-  const progressBars = [progressBar, document.querySelector('.seek-bar'), document.querySelector('.mobile-progress .progress-bar')];
+  const progressBars = [document.querySelector('.seek-bar'), document.querySelector('.mobile-progress .progress-bar')];
   progressBars.forEach(bar => {
     if (!bar) return;
     
+    // Mouse events
     bar.addEventListener("mousedown", (event) => {
       isSeeking = true;
       seekToPosition(event, bar);
@@ -476,17 +477,32 @@ document.addEventListener("DOMContentLoaded", () => {
       if (isSeeking) seekToPosition(event, bar);
     });
     
-    bar.addEventListener("mouseup", () => { isSeeking = false; });
-    bar.addEventListener("mouseleave", () => { isSeeking = false; });
+    // Touch events for mobile
+    bar.addEventListener("touchstart", (event) => {
+      isSeeking = true;
+      seekToPosition(event.touches[0], bar);
+    });
+    
+    bar.addEventListener("touchmove", (event) => {
+      event.preventDefault(); // Prevent scrolling while seeking
+      if (isSeeking) seekToPosition(event.touches[0], bar);
+    });
+    
+    // End events for both mouse and touch
+    const endSeeking = () => { isSeeking = false; };
+    bar.addEventListener("mouseup", endSeeking);
+    bar.addEventListener("mouseleave", endSeeking);
+    bar.addEventListener("touchend", endSeeking);
+    bar.addEventListener("touchcancel", endSeeking);
   });
   audioPlayer.addEventListener("ended", () => socket.emit("next"));
   // Update progress even when muted
   socket.on("playbackStateUpdate", (newState) => {
+    playbackState = newState;
     if (!isSeeking && newState.currentSong) {
       const progress = (newState.currentTime / newState.currentSong.duration) * 100;
-      // Update all progress bars
+      // Update all progress bars regardless of mute state
       const allProgressBars = [
-        progressBar,
         document.querySelector('.mobile-progress .progress'),
         document.querySelector('.seek-bar .progress')
       ];
@@ -494,6 +510,9 @@ document.addEventListener("DOMContentLoaded", () => {
         if (bar) bar.style.width = `${progress}%`;
       });
     }
+    updatePlaybackControls();
+    audioPlayer.volume = playbackState.clientsPlayingAudio.includes(socket.id) ? localVolume : 0;
+    updateAudioToggleButton();
   });
 
   // Enable drag-and-drop reordering of the queue
