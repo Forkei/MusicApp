@@ -475,8 +475,9 @@ app.post("/api/download", async (req, res) => {
       "-v"
     ];
     const command = `yt-dlp ${options.join(" ")} "${url}"`;
+    console.log("Download command:", command);
 
-    exec(command, async (error, stdout, stderr) => {
+    exec(command, { maxBuffer: 1024 * 1024 * 10 }, async (error, stdout, stderr) => {
       if (error) {
         console.error("Error downloading:", error);
         return res.status(500).json({ error: "Failed to download song" });
@@ -487,6 +488,7 @@ app.post("/api/download", async (req, res) => {
       const expectedAlbumArtUrl = `public/images/${songTitle}.jpg`;
 
 
+      // Move album art if exists
       const expectedAlbumArtPath = path.join(AUDIO_DIR, `${songTitle}.jpg`);
       const newAlbumArtPath = path.join(IMAGES_DIR, `${songTitle}.jpg`);
       try {
@@ -494,6 +496,17 @@ app.post("/api/download", async (req, res) => {
         await fsp.rename(expectedAlbumArtPath, newAlbumArtPath);
       } catch (err) {
         console.error("Failed to move album art:", err);
+      }
+
+      // Move video if exists
+      const expectedVideoPath = path.join(AUDIO_DIR, `${songTitle}.mp4`);
+      const newVideoPath = path.join(VIDEOS_DIR, `${songTitle}.mp4`);
+      try {
+        await fsp.access(expectedVideoPath);
+        await fsp.rename(expectedVideoPath, newVideoPath);
+        console.log("Video moved successfully");
+      } catch (err) {
+        console.error("No video found or failed to move video:", err);
       }
 
       ffmpeg.ffprobe(expectedFilePath, async (err, metadata) => {
