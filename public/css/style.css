@@ -18,6 +18,12 @@ body {
   padding-top: 60px; /* space for top bar */
 }
 
+.main-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
 /* Top bar */
 .top-bar {
   background-color: #080808;
