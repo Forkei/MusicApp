@@ -60,7 +60,7 @@ app.use(express.static(path.join(__dirname, "public")));
 // ---------- Public Endpoint: Streaming Audio ------------
 app.get("/api/stream/:encodedPath", (req, res) => {
   const filePath = decodeURIComponent(req.params.encodedPath);
-  const absolutePath = path.resolve(filePath);
+  const absolutePath = path.resolve(filePath).replace(/\\/g, '/');
   const audioDir = path.resolve(path.join(__dirname, "Audio"));
 
   if (!absolutePath.startsWith(audioDir)) {
@@ -375,7 +375,7 @@ async function scanAudioDirectory() {
       console.log(`Processing file: ${dirent.name}`);
       try {
         const metadata = await new Promise((resolve, reject) => {
-          ffmpeg.ffprobe(filePath, (err, metadata) => {
+          ffmpeg.ffprobe(`"${filePath}"`, (err, metadata) => {
             if (err) reject(err);
             else resolve(metadata);
           });
