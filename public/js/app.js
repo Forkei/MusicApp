@@ -551,24 +551,41 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         return res.json();
       })
-      .then(song => {
-        if (!song || !song.filePath) {
-          throw new Error("Invalid song data received");
+      .then(response => {
+        if (response.exists) {
+          const message = response.artUpdated ? 
+            "Song already exists. Cover art was updated successfully!" :
+            "Song already exists. Could not update cover art.";
+          displayError(message);
+          
+          downloadButton.textContent = "Queue";
+          downloadButton.disabled = false;
+          downloadButton.onclick = () => {
+            if (hasPermission("QUEUE_MANAGEMENT")) {
+              socket.emit("addToQueue", response.song.filePath);
+            } else {
+              displayError("You don't have permission to queue songs.");
+            }
+          };
+        } else {
+          if (!response || !response.filePath) {
+            throw new Error("Invalid song data received");
+          }
+          
+          addSongToList(response);
+          window.songs.push(response);
+    
+          downloadButton.textContent = "Queue";
+          downloadButton.disabled = false;
+          downloadButton.onclick = () => {
+            if (hasPermission("QUEUE_MANAGEMENT")) {
+              socket.emit("addToQueue", response.filePath);
+            } else {
+              displayError("You don't have permission to queue songs.");
+            }
+          };
         }
         
-        addSongToList(song);
-        window.songs.push(song);
-  
-        downloadButton.textContent = "Queue";
-        downloadButton.disabled = false;
-        downloadButton.onclick = () => {
-          if (hasPermission("QUEUE_MANAGEMENT")) {
-            socket.emit("addToQueue", song.filePath);
-          } else {
-            displayError("You don't have permission to queue songs.");
-          }
-        };
-  
         songItem.dataset.downloaded = "true";
         progressSpan.remove();
       })

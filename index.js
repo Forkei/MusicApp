@@ -456,9 +456,28 @@ app.post("/api/download", async (req, res) => {
         }
 
         const { duration, tags } = metadata.format;
-        if (songs.some(s => s.filePath === expectedFilePath)) {
+        const existingSong = songs.find(s => s.filePath === expectedFilePath);
+        if (existingSong) {
           console.log("Song already exists:", tags.title || title);
-          return res.status(409).json({ error: "Song already exists" });
+        
+          // Try to fetch cover art for existing song
+          try {
+            await fsp.access(expectedAlbumArtPath);
+            await fsp.rename(expectedAlbumArtPath, newAlbumArtPath);
+            existingSong.albumArtPath = expectedAlbumArtUrl;
+            return res.json({ 
+              exists: true, 
+              artUpdated: true,
+              song: existingSong
+            });
+          } catch (err) {
+            console.error("Failed to update cover art:", err);
+            return res.json({ 
+              exists: true, 
+              artUpdated: false,
+              song: existingSong
+            });
+          }
         }
 
         const newSong = {
