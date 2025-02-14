@@ -286,11 +286,9 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
     const songUrl = `/api/stream/${encodeURIComponent(song.filePath)}`;
-    if (audioPlayer.src !== songUrl || audioPlayer.ended) {
-      audioPlayer.src = songUrl;
-      audioPlayer.load();
-      audioPlayer.currentTime = playbackState.currentTime;
-    }
+    audioPlayer.src = songUrl;
+    audioPlayer.load();
+    audioPlayer.currentTime = playbackState.currentTime;
 
     const albumArt = document.getElementById("album-art");
     const videoPlayer = document.getElementById("song-video");
@@ -522,6 +520,25 @@ document.addEventListener("DOMContentLoaded", () => {
       allProgressBars.forEach(bar => {
         if (bar) bar.style.width = `${progress}%`;
       });
+
+      // Handle audio playback sync
+      if (playbackState.clientsPlayingAudio.includes(socket.id)) {
+        if (!audioPlayer.src || audioPlayer.src !== `/api/stream/${encodeURIComponent(newState.currentSong.filePath)}`) {
+          playSong(newState.currentSong);
+        }
+        
+        if (playbackState.isPlaying) {
+          const timeDiff = Math.abs(audioPlayer.currentTime - newState.currentTime);
+          if (timeDiff > 0.5) {
+            audioPlayer.currentTime = newState.currentTime;
+          }
+          audioPlayer.play().catch(console.error);
+        } else {
+          audioPlayer.pause();
+        }
+      } else {
+        audioPlayer.pause();
+      }
     }
     updatePlaybackControls();
     audioPlayer.volume = playbackState.clientsPlayingAudio.includes(socket.id) ? localVolume : 0;
