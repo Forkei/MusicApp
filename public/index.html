@@ -57,14 +57,21 @@
     </div>
 
     <!-- Mobile top bar -->
-    <div class="mobile-top-bar hidden">
-      <button id="hamburger-menu"><i class="fas fa-bars"></i></button>
-      <span class="mobile-song-info">Loading...</span>
+    <div class="mobile-top-bar">
+      <div class="mobile-header">
+        <button id="hamburger-menu" aria-label="Menu"><i class="fas fa-bars"></i></button>
+        <span class="mobile-song-info">Loading...</span>
+        <button id="mobile-audio-toggle" aria-label="Toggle Audio"><i class="fas fa-volume-up"></i></button>
+      </div>
       <div class="mobile-controls">
-        <button id="mobile-prev"><i class="fas fa-backward"></i></button>
-        <button id="mobile-play-pause"><i class="fas fa-play"></i></button>
-        <button id="mobile-next"><i class="fas fa-forward"></i></button>
-        <button id="mobile-audio-toggle"><i class="fas fa-volume-up"></i></button>
+        <button id="mobile-prev" aria-label="Previous"><i class="fas fa-backward"></i></button>
+        <button id="mobile-play-pause" aria-label="Play/Pause"><i class="fas fa-play"></i></button>
+        <button id="mobile-next" aria-label="Next"><i class="fas fa-forward"></i></button>
+      </div>
+      <div class="mobile-progress">
+        <div class="progress-bar">
+          <div class="progress"></div>
+        </div>
       </div>
     </div>
 

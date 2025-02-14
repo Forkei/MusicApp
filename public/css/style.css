@@ -360,14 +360,15 @@ body {
 /* Mobile Sidebar */
 .sidebar {
   position: fixed;
-  left: -250px;
+  left: -280px;
   top: 0;
-  width: 250px;
+  width: 280px;
   height: 100vh;
   background-color: #222;
   transition: left 0.3s ease;
   z-index: 1000;
   padding-top: 60px;
+  box-shadow: 2px 0 10px rgba(0,0,0,0.5);
 }
 .sidebar.open {
   left: 0;
@@ -400,24 +401,82 @@ body {
   cursor: pointer;
 }
 @media (max-width: 768px) {
+  body {
+    padding-top: 100px;
+  }
+  
   .hamburger-menu {
     display: block;
+    padding: 15px;
   }
+  
   .top-bar .nav {
     display: none;
   }
+  
   .mini-player {
-    flex-direction: row-reverse;
-    justify-content: flex-end;
+    flex-direction: column;
+    align-items: center;
     padding: 10px;
   }
+  
   .mini-player .song-info {
-    font-size: 0.8em;
-    margin: 0 10px;
+    font-size: 0.9em;
+    margin: 5px 0;
+    max-width: 200px;
+    text-align: center;
   }
+  
+  .mini-player .controls {
+    margin: 10px 0;
+  }
+  
+  .mini-player .controls button {
+    padding: 12px;
+    margin: 0 8px;
+  }
+  
   .progress-bar {
     width: 90%;
     margin: 10px 0;
+    height: 12px;
+  }
+  
+  .album-art {
+    width: 250px;
+    height: 250px;
+    margin: 20px auto;
+  }
+  
+  .player-controls button {
+    padding: 15px;
+    font-size: 28px;
+    margin: 0 12px;
+  }
+  
+  .search-bar input,
+  .search-bar button,
+  #dbSearchInput,
+  #dbSearchButton {
+    height: 44px;
+    font-size: 16px;
+  }
+  
+  .queue-list li {
+    padding: 12px 8px;
+  }
+  
+  .queue-list li button {
+    padding: 8px 12px;
+  }
+  
+  .song-item {
+    padding: 15px 10px;
+  }
+  
+  .song-item button {
+    padding: 8px 15px;
+    min-width: 80px;
   }
 }
 
@@ -461,4 +520,67 @@ body {
   border-radius: 5px;
   margin-bottom: 10px;
   text-align: center;
+}
+/* Mobile top bar styles */
+.mobile-top-bar {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background-color: #080808;
+  padding: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  z-index: 99;
+}
+
+.mobile-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.mobile-song-info {
+  flex: 1;
+  text-align: center;
+  margin: 0 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mobile-controls {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin: 10px 0;
+}
+
+.mobile-controls button {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 24px;
+  padding: 12px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.mobile-controls button:active {
+  background-color: #333;
+}
+
+.mobile-progress {
+  padding: 0 10px;
+}
+
+@media (max-width: 768px) {
+  .mobile-top-bar {
+    display: block;
+  }
+  
+  .top-bar {
+    display: none;
+  }
 }
