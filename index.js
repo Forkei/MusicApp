@@ -508,6 +508,25 @@ app.post("/api/download", async (req, res) => {
         console.error("No video found or failed to move video:", err);
       }
 
+      // Wait for file to exist before proceeding
+      let fileExists = false;
+      let retries = 0;
+      const maxRetries = 10;
+      
+      while (!fileExists && retries < maxRetries) {
+        try {
+          await fsp.access(expectedFilePath);
+          fileExists = true;
+        } catch (err) {
+          retries++;
+          await new Promise(resolve => setTimeout(resolve, 1000)); // Wait 1 second between retries
+        }
+      }
+
+      if (!fileExists) {
+        throw new Error("Downloaded file not found after waiting");
+      }
+
       // Create temp directory if it doesn't exist
       const tempDir = path.join(__dirname, 'temp');
       await fsp.mkdir(tempDir, { recursive: true });
