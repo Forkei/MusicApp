@@ -511,7 +511,18 @@ app.post("/api/download", async (req, res) => {
       ffmpeg.ffprobe(expectedFilePath, async (err, metadata) => {
         if (err) {
           console.error("Error getting metadata:", err);
-          return res.status(500).json({ error: "Error getting metadata" });
+          // Create basic metadata if ffprobe fails
+          const basicMetadata = {
+            format: {
+              duration: 0, // Will be updated on first play
+              tags: {
+                title: title || songTitle,
+                artist: uploader || "Unknown Artist",
+                album: "Unknown Album"
+              }
+            }
+          };
+          metadata = basicMetadata;
         }
 
         const { duration, tags } = metadata.format;
