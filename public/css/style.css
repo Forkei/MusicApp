@@ -585,6 +585,29 @@ body {
   cursor: pointer;
 }
 
+#mobile-audio-toggle {
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: transparent;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#mobile-audio-toggle:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+#mobile-audio-toggle i {
+  font-size: 18px;
+}
+
 .mobile-controls button:active {
   background-color: #333;
 }

@@ -580,6 +580,13 @@ document.addEventListener("DOMContentLoaded", () => {
   if (mobilePlayPauseButton) mobilePlayPauseButton.addEventListener("click", () => socket.emit("play", playbackState));
   if (mobileNextButton) mobileNextButton.addEventListener("click", () => socket.emit("next"));
   if (mobilePrevButton) mobilePrevButton.addEventListener("click", () => socket.emit("previous"));
+  if (mobileAudioToggleButton) {
+    mobileAudioToggleButton.addEventListener("click", () => {
+      const enabled = playbackState.clientsPlayingAudio.includes(socket.id);
+      socket.emit("toggleAudioOutput", !enabled);
+      updateAudioToggleButton();
+    });
+  }
 
   // Socket event handlers and logging
   socket.on("playbackStateUpdate", (newState) => {
