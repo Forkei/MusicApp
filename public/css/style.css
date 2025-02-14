@@ -73,8 +73,13 @@ body {
   font-size: 0.9em;
   white-space: nowrap;
   overflow: hidden;
-  text-overflow: ellipsis;
   max-width: 150px;
+  animation: scrollText 20s linear infinite;
+}
+
+@keyframes scrollText {
+  0% { transform: translateX(100%); }
+  100% { transform: translateX(-100%); }
 }
 .mini-player .controls button {
   background: none;
@@ -93,13 +98,22 @@ body {
 #audioToggleButton {
   color: white;
   border: none;
-  padding: 5px 10px;
-  border-radius: 5px;
+  padding: 8px 12px;
+  border-radius: 50%;
   cursor: pointer;
-  transition: background 0.3s;
+  transition: all 0.3s ease;
+  background: transparent;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 #audioToggleButton:hover {
-  opacity: 0.8;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+#audioToggleButton i {
+  font-size: 18px;
 }
 .progress-bar {
   width: 200px;
@@ -152,6 +166,10 @@ body {
 .song-item .title {
   flex-grow: 1;
   margin-right: 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: calc(100% - 200px);
 }
 .song-item .artist {
   color: #aaa;

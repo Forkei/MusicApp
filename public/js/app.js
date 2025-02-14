@@ -157,9 +157,11 @@ document.addEventListener("DOMContentLoaded", () => {
   // UI update functions
   function updateMiniPlayer(song) {
     if (song) {
-      miniPlayerSongInfo.textContent = `${song.title} - ${song.artist || "Unknown Artist"}`;
+      const fullText = `${song.title} - ${song.artist || "Unknown Artist"}`;
+      miniPlayerSongInfo.textContent = fullText;
       if (mobileSongInfo) {
-        mobileSongInfo.textContent = `${song.title.substring(0, 20)} - ${song.artist.substring(0, 20)}`;
+        const mobileText = fullText.length > 40 ? fullText.substring(0, 37) + "..." : fullText;
+        mobileSongInfo.textContent = mobileText;
       }
     } else {
       miniPlayerSongInfo.textContent = "No song playing";
