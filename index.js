@@ -59,23 +59,47 @@ app.use(express.static(path.join(__dirname, "public")));
 
 // ---------- Public Endpoint: Streaming Audio ------------
 app.get("/api/stream/:encodedPath", (req, res) => {
-  const filePath = decodeURIComponent(req.params.encodedPath);
-  const absolutePath = path.resolve(filePath).replace(/\\/g, '/');
-  const audioDir = path.resolve(path.join(__dirname, "Audio"));
+  try {
+    const filePath = decodeURIComponent(req.params.encodedPath);
+    const audioDir = path.resolve(path.join(__dirname, "Audio"));
+    const absolutePath = path.resolve(path.join(audioDir, path.basename(filePath))).replace(/\\/g, '/');
 
-  if (!absolutePath.startsWith(audioDir)) {
-    return res.status(403).send("Access denied");
-  }
-
-  res.sendFile(absolutePath, (err) => {
-    if (err) {
-      if (err.code === 'ECONNABORTED') {
-        console.log("Stream aborted by the client.");
-      } else {
-        console.error("Stream error:", err);
-      }
+    // Verify the file is within the audio directory
+    if (!absolutePath.startsWith(audioDir)) {
+      console.error("Access denied - path outside audio directory:", absolutePath);
+      return res.status(403).send("Access denied");
     }
-  });
+
+    // Check if file exists
+    if (!fs.existsSync(absolutePath)) {
+      console.error("File not found:", absolutePath);
+      return res.status(404).send("File not found");
+    }
+
+    // Set proper headers
+    res.set({
+      'Content-Type': 'audio/mpeg',
+      'Accept-Ranges': 'bytes'
+    });
+
+    res.sendFile(absolutePath, (err) => {
+      if (err) {
+        if (err.code === 'ECONNABORTED') {
+          console.log("Stream aborted by the client.");
+        } else {
+          console.error("Stream error:", err);
+          if (!res.headersSent) {
+            res.status(500).send("Error streaming file");
+          }
+        }
+      }
+    });
+  } catch (err) {
+    console.error("Stream endpoint error:", err);
+    if (!res.headersSent) {
+      res.status(500).send("Server error");
+    }
+  }
 });
 
 // ---------- Public API: /api/songs ------------

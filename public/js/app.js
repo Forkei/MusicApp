@@ -285,17 +285,24 @@ document.addEventListener("DOMContentLoaded", () => {
       console.error("No song to play");
       return;
     }
-    const songUrl = `/api/stream/${encodeURIComponent(song.filePath)}`;
     
-    // Only set src if it's different
-    if (!audioPlayer.src || !audioPlayer.src.includes(encodeURIComponent(song.filePath))) {
-      audioPlayer.src = songUrl;
-      audioPlayer.load();
-      // Set initial volume
-      audioPlayer.volume = playbackState.clientsPlayingAudio.includes(socket.id) ? localVolume : 0;
-    }
+    // Properly encode the file path for URLs
+    const encodedPath = encodeURIComponent(song.filePath.replace(/\\/g, '/'));
+    const songUrl = `/api/stream/${encodedPath}`;
     
-    audioPlayer.currentTime = playbackState.currentTime;
+    console.log("Setting audio source:", songUrl); // Debug log
+    
+    // Always set the source and load to ensure proper initialization
+    audioPlayer.src = songUrl;
+    audioPlayer.load();
+    
+    // Set initial volume
+    audioPlayer.volume = playbackState.clientsPlayingAudio.includes(socket.id) ? localVolume : 0;
+    
+    // Set the current time after loading
+    audioPlayer.addEventListener('loadedmetadata', () => {
+      audioPlayer.currentTime = playbackState.currentTime;
+    }, { once: true });
 
     const albumArt = document.getElementById("album-art");
     const videoPlayer = document.getElementById("song-video");
