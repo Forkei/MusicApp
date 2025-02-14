@@ -72,6 +72,17 @@ body {
   padding-right: 15px;
   transition: opacity 0.3s ease;
 }
+
+.mini-player .controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.mini-player #audioToggleButton {
+  order: -1; /* Move to start */
+  margin-right: 10px;
+}
 .mini-player.hidden {
   opacity: 0;
   pointer-events: none;
