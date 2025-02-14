@@ -310,6 +310,19 @@ body {
 .player-controls button:hover {
   background-color: #444;
 }
+
+#fetch-art-button {
+  background-color: transparent;
+  color: #1DB954;
+}
+
+#fetch-art-button:hover {
+  background-color: rgba(29, 185, 84, 0.1);
+}
+
+#fetch-art-button.hidden {
+  display: none;
+}
 .seek-bar {
   width: 100%;
   height: 10px;

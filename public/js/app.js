@@ -55,6 +55,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const albumArt = document.getElementById("album-art");
   const loopButton = document.getElementById("loop-button");
   const fullscreenButton = document.getElementById("fullscreen-button");
+  const fetchArtButton = document.getElementById("fetch-art-button");
 
   // Mobile elements
   const mobilePlayPauseButton = document.getElementById("mobile-play-pause");
@@ -70,6 +71,38 @@ document.addEventListener("DOMContentLoaded", () => {
     const adminNav = document.getElementById("adminNav");
     if (adminNav) adminNav.classList.remove("hidden");
   }
+
+  // Show fetch art button if user has permissions
+  if (hasSearchDownloadPermission()) {
+    fetchArtButton.classList.remove("hidden");
+  }
+
+  // Add fetch art button handler
+  fetchArtButton.addEventListener("click", async () => {
+    if (!playbackState.currentSong) return;
+    
+    try {
+      const response = await fetch("/api/fetchCoverArt", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          songTitle: playbackState.currentSong.title,
+          youtubeId: playbackState.currentSong.youtubeId
+        })
+      });
+
+      if (!response.ok) throw new Error("Failed to fetch cover art");
+      
+      const data = await response.json();
+      if (data.success) {
+        albumArt.src = data.artPath;
+        playbackState.currentSong.albumArtPath = data.artPath;
+      }
+    } catch (err) {
+      console.error("Error fetching cover art:", err);
+      displayError("Failed to fetch cover art");
+    }
+  });
 
   // Logging socket connection status
   socket.on("connect", () => {
@@ -155,6 +188,10 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // UI update functions
+  function hasSearchDownloadPermission() {
+    return window.userRole === "admin" || window.userRole === "user";
+  }
+
   function updateMiniPlayer(song) {
     if (song) {
       const fullText = `${song.title} - ${song.artist || "Unknown Artist"}`;

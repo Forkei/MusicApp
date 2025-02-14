@@ -186,6 +186,37 @@ app.get("/api/admin/role/:role", requireAdmin, async (req, res) => {
   res.json(role);
 });
 
+// Endpoint to fetch cover art for a song
+app.post("/api/fetchCoverArt", async (req, res) => {
+  const { songTitle, youtubeId } = req.body;
+  
+  if (!songTitle) {
+    return res.status(400).json({ error: "Missing song title" });
+  }
+
+  const user = req.session.user;
+  if (!user || !hasPermission(user, "SEARCH_DOWNLOAD")) {
+    return res.status(403).json({ error: "Insufficient permissions" });
+  }
+
+  try {
+    const url = youtubeId ? 
+      `https://www.youtube.com/watch?v=${youtubeId}` : 
+      `ytsearch1:${songTitle}`;
+
+    const command = `yt-dlp --write-thumbnail --convert-thumbnails jpg --skip-download -o "${path.join(IMAGES_DIR, songTitle)}" "${url}"`;
+    
+    const { stdout, stderr } = await execProm(command);
+    if (stderr) console.error("yt-dlp stderr:", stderr);
+
+    const artPath = `/images/${songTitle}.jpg`;
+    res.json({ success: true, artPath });
+  } catch (err) {
+    console.error("Error fetching cover art:", err);
+    res.status(500).json({ error: "Failed to fetch cover art" });
+  }
+});
+
 app.post("/api/admin/refresh", requireAdmin, async (req, res) => {
   songs = [];
   await scanAudioDirectory();
@@ -411,9 +442,12 @@ app.post("/api/download", async (req, res) => {
 
       const expectedAlbumArtPath = path.join(AUDIO_DIR, `${songTitle}.jpg`);
       const newAlbumArtPath = path.join(IMAGES_DIR, `${songTitle}.jpg`);
-      fsp.rename(expectedAlbumArtPath, newAlbumArtPath).catch(() => {
-        console.error("Failed to move album art to /public/images/");
-      });
+      try {
+        await fsp.access(expectedAlbumArtPath);
+        await fsp.rename(expectedAlbumArtPath, newAlbumArtPath);
+      } catch (err) {
+        console.error("Failed to move album art:", err);
+      }
 
       ffmpeg.ffprobe(expectedFilePath, (err, metadata) => {
         if (err) {
