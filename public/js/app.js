@@ -323,9 +323,15 @@ document.addEventListener("DOMContentLoaded", () => {
             credentials: 'include'
           })
           .then(async res => {
+            const contentType = res.headers.get("content-type");
             if (!res.ok) {
-              const data = await res.json();
-              throw new Error(data.error || 'Failed to delete song');
+              if (contentType && contentType.includes("application/json")) {
+                const data = await res.json();
+                throw new Error(data.error || 'Failed to delete song');
+              } else {
+                const text = await res.text();
+                throw new Error(text || `Server error (${res.status})`);
+              }
             }
             return res.json();
           })
