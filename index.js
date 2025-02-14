@@ -464,13 +464,11 @@ app.post("/api/download", async (req, res) => {
     const options = [
       "--extract-audio",
       "--audio-format", "mp3",
-      "--output", `"${outputPath}"`,  
+      "--output", `"${outputPath}"`,
       "--no-playlist",
       "-f", "bestaudio/best",
       "--write-thumbnail",
-      "--convert-thumbnails", "jpg", 
-      "--format", "mp4",
-      "--recode-video", "mp4",
+      "--convert-thumbnails", "jpg",
       "-v"
     ];
     const command = `yt-dlp ${options.join(" ")} "${url}"`;
