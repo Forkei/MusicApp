@@ -495,16 +495,6 @@ app.post("/api/download", async (req, res) => {
         console.error("Failed to move album art:", err);
       }
 
-      // Move video if exists
-      const expectedVideoPath = path.join(AUDIO_DIR, `${songTitle}.mp4`);
-      const newVideoPath = path.join(VIDEOS_DIR, `${songTitle}.mp4`);
-      try {
-        await fsp.access(expectedVideoPath);
-        await fsp.rename(expectedVideoPath, newVideoPath);
-        console.log("Video moved successfully");
-      } catch (err) {
-        console.error("No video found or failed to move video:", err);
-      }
 
       // Wait for file to exist before proceeding
       let fileExists = false;
