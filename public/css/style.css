@@ -582,6 +582,24 @@ body {
   margin-bottom: 8px;
 }
 
+.mobile-logout-btn {
+  color: white;
+  text-decoration: none;
+  padding: 8px 12px;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  background: transparent;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mobile-logout-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
 .mobile-song-info {
   flex: 1;
   text-align: center;

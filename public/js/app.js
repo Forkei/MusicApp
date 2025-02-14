@@ -375,6 +375,11 @@ document.addEventListener("DOMContentLoaded", () => {
   audioPlayer.addEventListener("timeupdate", () => {
     if (!isSeeking && playbackState.currentSong && audioPlayer.duration) {
       progressBar.style.width = `${(audioPlayer.currentTime / audioPlayer.duration) * 100}%`;
+      // Update mobile progress bar
+      const mobileProgressBar = document.querySelector('.mobile-progress .progress');
+      if (mobileProgressBar) {
+        mobileProgressBar.style.width = `${(audioPlayer.currentTime / audioPlayer.duration) * 100}%`;
+      }
     }
   });
 
@@ -616,6 +621,11 @@ document.addEventListener("DOMContentLoaded", () => {
       currentSongArtist.textContent = "";
       updateMiniPlayer(null);
       audioPlayer.src = "";
+      // Reset mobile progress bar when no song is playing
+      const mobileProgressBar = document.querySelector('.mobile-progress .progress');
+      if (mobileProgressBar) {
+        mobileProgressBar.style.width = '0%';
+      }
     }
   });
   socket.on("songAdded", (song) => {
