@@ -522,6 +522,19 @@ document.addEventListener("DOMContentLoaded", () => {
       allProgressBars.forEach(bar => {
         if (bar) bar.style.width = `${progress}%`;
       });
+
+      // Update audio playback state
+      if (playbackState.isPlaying && playbackState.clientsPlayingAudio.includes(socket.id)) {
+        if (audioPlayer.paused) {
+          playSong(playbackState.currentSong);
+        }
+        const diff = Math.abs(audioPlayer.currentTime - playbackState.currentTime);
+        if (diff > 0.5) {
+          audioPlayer.currentTime = playbackState.currentTime;
+        }
+      } else {
+        audioPlayer.pause();
+      }
     }
     updatePlaybackControls();
     audioPlayer.volume = playbackState.clientsPlayingAudio.includes(socket.id) ? localVolume : 0;
