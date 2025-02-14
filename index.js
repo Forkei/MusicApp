@@ -458,9 +458,8 @@ app.post("/api/download", async (req, res) => {
     await fsp.mkdir(AUDIO_DIR, { recursive: true });
     await fsp.mkdir(IMAGES_DIR, { recursive: true });
 
-    //const sanitizedTitle = title ? title.replace(/[^a-z0-9]/gi, "_") : "unknown";
-    const songTitle = title ? title.replace(/[^a-z0-9]/gi, " ") : "unknown";
-    const outputPath = path.join(AUDIO_DIR, `${songTitle}.%(ext)s`);
+    const songTitle = title ? title.replace(/[^a-z0-9]/gi, "_") : "unknown";
+    const outputPath = path.join(AUDIO_DIR, `${songTitle}.%(ext)s`).replace(/\\/g, '/');
     
     const options = [
       "--extract-audio",
