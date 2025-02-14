@@ -375,7 +375,7 @@ async function scanAudioDirectory() {
       console.log(`Processing file: ${dirent.name}`);
       try {
         const metadata = await new Promise((resolve, reject) => {
-          ffmpeg.ffprobe(`"${filePath}"`, (err, metadata) => {
+          ffmpeg.ffprobe(filePath, (err, metadata) => {
             if (err) reject(err);
             else resolve(metadata);
           });
