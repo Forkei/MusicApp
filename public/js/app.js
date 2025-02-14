@@ -263,9 +263,29 @@ document.addEventListener("DOMContentLoaded", () => {
       audioPlayer.load();
       audioPlayer.currentTime = playbackState.currentTime;
     }
-    if (albumArt) {
-      albumArt.src = song.albumArtPath || "/images/placeholder.jpg";
-      albumArt.onerror = () => (albumArt.src = "/images/placeholder.jpg");
+
+    const albumArt = document.getElementById("album-art");
+    const videoPlayer = document.getElementById("song-video");
+
+    if (song.videoPath) {
+      // Show video, hide album art
+      if (albumArt) albumArt.classList.add("hidden");
+      if (videoPlayer) {
+        videoPlayer.classList.remove("hidden");
+        videoPlayer.src = song.videoPath;
+        videoPlayer.currentTime = playbackState.currentTime;
+      }
+    } else {
+      // Show album art, hide video
+      if (videoPlayer) {
+        videoPlayer.classList.add("hidden");
+        videoPlayer.src = "";
+      }
+      if (albumArt) {
+        albumArt.classList.remove("hidden");
+        albumArt.src = song.albumArtPath || "/images/placeholder.jpg";
+        albumArt.onerror = () => (albumArt.src = "/images/placeholder.jpg");
+      }
     }
     audioPlayer.onloadeddata = () => {
       if (!playbackState.isPlaying) {

@@ -298,9 +298,11 @@ app.use((req, res, next) => {
 // ---------- Directory Setup ------------
 const AUDIO_DIR = path.join(__dirname, "Audio");
 const IMAGES_DIR = path.join(__dirname, "public", "images");
+const VIDEOS_DIR = path.join(__dirname, "public", "videos");
 
 fsp.mkdir(AUDIO_DIR, { recursive: true }).catch(console.error);
 fsp.mkdir(IMAGES_DIR, { recursive: true }).catch(console.error);
+fsp.mkdir(VIDEOS_DIR, { recursive: true }).catch(console.error);
 
 // ---------- In-Memory Storage ------------
 let songs = [];
@@ -467,7 +469,9 @@ app.post("/api/download", async (req, res) => {
       "--no-playlist",
       "-f", "bestaudio/best",
       "--write-thumbnail",
-      "--convert-thumbnails", "jpg",
+      "--convert-thumbnails", "jpg", 
+      "--format", "mp4",
+      "--recode-video", "mp4",
       "-v"
     ];
     const command = `yt-dlp ${options.join(" ")} "${url}"`;
@@ -523,6 +527,11 @@ app.post("/api/download", async (req, res) => {
           }
         }
 
+        // Check if video file exists
+        const videoFileName = `${songTitle}.mp4`;
+        const videoPath = path.join(VIDEOS_DIR, videoFileName);
+        const hasVideo = await fsp.access(videoPath).then(() => true).catch(() => false);
+
         const newSong = {
           title: tags.title || title,
           artist: tags.artist,
@@ -531,7 +540,8 @@ app.post("/api/download", async (req, res) => {
           youtubeId: videoId,
           duration,
           uploader,
-          albumArtPath: expectedAlbumArtUrl
+          albumArtPath: expectedAlbumArtUrl,
+          videoPath: hasVideo ? `/videos/${videoFileName}` : null
         };
         songs.push(newSong);
         io.emit("songAdded", newSong);
@@ -671,6 +681,12 @@ io.on("connection", (socket) => {
     playbackState.currentTime = time;
     playbackState.startTime = Date.now() - time * 1000;
     io.emit("playbackStateUpdate", playbackState);
+    
+    // Sync video time if playing
+    const videoPlayer = document.getElementById("song-video");
+    if (videoPlayer && !videoPlayer.classList.contains("hidden")) {
+      videoPlayer.currentTime = time;
+    }
   });
 
   socket.on("toggleAudioOutput", (enabled) => {

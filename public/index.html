@@ -101,7 +101,12 @@
       <!-- Play Page -->
       <div id="playPage" class="page hidden">
         <center>
-          <img src="images/placeholder.jpg" alt="Album Art" class="album-art" id="album-art">
+          <div class="media-container">
+            <img src="images/placeholder.jpg" alt="Album Art" class="album-art" id="album-art">
+            <video id="song-video" class="song-video hidden" controls>
+              Your browser does not support the video element.
+            </video>
+          </div>
         </center>
         <h2 id="currentSongTitle">Song Title</h2>
         <p id="currentSongArtist">Artist Name</p>
