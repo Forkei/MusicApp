@@ -217,6 +217,49 @@ app.post("/api/fetchCoverArt", async (req, res) => {
   }
 });
 
+// Delete song endpoint
+app.delete("/api/songs/:filePath", async (req, res) => {
+  const user = req.session.user;
+  if (!user || !hasPermission(user, "DELETE_SONGS")) {
+    return res.status(403).json({ error: "Insufficient permissions" });
+  }
+
+  const filePath = decodeURIComponent(req.params.filePath);
+  const absolutePath = path.resolve(filePath);
+  const audioDir = path.resolve(path.join(__dirname, "Audio"));
+
+  if (!absolutePath.startsWith(audioDir)) {
+    return res.status(403).send("Access denied");
+  }
+
+  try {
+    // Get the base filename without extension
+    const baseName = path.basename(filePath, '.mp3');
+    
+    // Delete the MP3 file
+    await fsp.unlink(filePath);
+    
+    // Try to delete the cover art if it exists
+    const coverArtPath = path.join(IMAGES_DIR, `${baseName}.jpg`);
+    try {
+      await fsp.unlink(coverArtPath);
+    } catch (err) {
+      console.log("No cover art to delete or error deleting cover art:", err);
+    }
+
+    // Remove the song from the songs array
+    const songIndex = songs.findIndex(s => s.filePath === filePath);
+    if (songIndex !== -1) {
+      songs.splice(songIndex, 1);
+    }
+
+    res.json({ success: true });
+  } catch (err) {
+    console.error("Error deleting file:", err);
+    res.status(500).json({ error: "Failed to delete file" });
+  }
+});
+
 app.post("/api/admin/refresh", requireAdmin, async (req, res) => {
   songs = [];
   await scanAudioDirectory();

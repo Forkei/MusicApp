@@ -318,12 +318,29 @@ document.addEventListener("DOMContentLoaded", () => {
     deleteBtn.addEventListener("click", () => {
       if (hasPermission("DELETE_SONGS")) {
         if (confirm(`Delete ${song.title}?`)) {
-          fetch(`/api/delete/${encodeURIComponent(song.filePath)}`, { method: "DELETE" })
-            .then(res => { if (res.ok) li.remove(); })
-            .catch(err => {
-              console.error("Delete error:", err);
-              displayError("Error deleting song.");
-            });
+          fetch(`/api/songs/${encodeURIComponent(song.filePath)}`, { 
+            method: "DELETE",
+            credentials: 'include'
+          })
+          .then(async res => {
+            if (!res.ok) {
+              const data = await res.json();
+              throw new Error(data.error || 'Failed to delete song');
+            }
+            return res.json();
+          })
+          .then(() => {
+            li.remove();
+            // Remove from window.songs array
+            const songIndex = window.songs.findIndex(s => s.filePath === song.filePath);
+            if (songIndex !== -1) {
+              window.songs.splice(songIndex, 1);
+            }
+          })
+          .catch(err => {
+            console.error("Delete error:", err);
+            displayError(err.message || "Error deleting song.");
+          });
         }
       } else {
         displayError("You don't have permission to delete songs.");
