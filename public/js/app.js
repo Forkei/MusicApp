@@ -556,23 +556,20 @@ document.addEventListener("DOMContentLoaded", () => {
   dbSearchInput.addEventListener("keyup", (event) => { if (event.key === "Enter") performDbSearch(); });
 
   function performDbSearch() {
-    const query = dbSearchInput.value;
-    fetch(`/api/songs?q=${query}`)
-      .then(res => res.json())
-      .then(songsFromDB => {
-        songList.innerHTML = "";
-        if (!songsFromDB.length) {
-          const li = document.createElement("li");
-          li.textContent = "No results found.";
-          songList.appendChild(li);
-        } else {
-          songsFromDB.forEach(song => addSongToList(song));
-        }
-      })
-      .catch(err => {
-        console.error("Local search error:", err);
-        displayError("Error searching local files.");
-      });
+    const query = dbSearchInput.value.toLowerCase();
+    const filteredSongs = window.songs.filter(song => 
+      song.title.toLowerCase().includes(query) || 
+      (song.artist && song.artist.toLowerCase().includes(query))
+    );
+    
+    songList.innerHTML = "";
+    if (!filteredSongs.length) {
+      const li = document.createElement("li");
+      li.textContent = "No results found.";
+      songList.appendChild(li);
+    } else {
+      filteredSongs.forEach(song => addSongToList(song));
+    }
   }
 
   playPauseButtonLarge.addEventListener("click", () => socket.emit("playbackStateUpdate", playbackState.isPlaying ? "pause" : "play"));
