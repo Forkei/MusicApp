@@ -175,6 +175,7 @@ document.addEventListener("DOMContentLoaded", () => {
     audioToggleButton.style.backgroundColor = enabled ? "green" : "red";
     if (mobileAudioToggleButton) {
       mobileAudioToggleButton.innerHTML = enabled ? '<i class="fas fa-volume-up"></i>' : '<i class="fas fa-volume-mute"></i>';
+      mobileAudioToggleButton.style.color = enabled ? "#1DB954" : "#ff4444";
     }
   }
 
