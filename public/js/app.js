@@ -489,9 +489,10 @@ document.addEventListener("DOMContentLoaded", () => {
         uploader: result.uploader 
       })
     })
-      .then(res => {
+      .then(async res => {
         if (!res.ok) {
-          throw new Error(`HTTP error! status: ${res.status}`);
+          const errorText = await res.text();
+          throw new Error(errorText || `Server error (${res.status})`);
         }
         return res.json();
       })
