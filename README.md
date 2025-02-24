@@ -124,7 +124,7 @@ The application implements a role-based permission system with three default rol
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License - see the MIT_LICENSE file for details.
 
 ## Acknowledgments
 
